@@ -1,0 +1,8 @@
+{
+  "name": "node-workroom",
+  "version": "0.0.1",
+  "description": "A Node.js dashboard for the workplace.",
+  "main": "main.js",
+  "repository": "",
+  "author": "James M. Duran"
+}
