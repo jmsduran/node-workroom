@@ -39,6 +39,13 @@ app.get("/css/dashboard.css", function(request, response) {
      });
 });
 
+app.get("/js/jquery/1.11.1/jquery.min.js", function(request, response) {
+     fs.readFile("./client/js/jquery/1.11.1/jquery.min.js", function(err, data) {
+          response.writeHead(200, {"Content-Type": "text/javascript"});
+          response.end(data);
+     });
+});
+
 app.get("/js/dashboard.js", function(request, response) {
      fs.readFile("./client/js/dashboard.js", function(err, data) {
           response.writeHead(200, {"Content-Type": "text/javascript"});
