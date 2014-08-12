@@ -19,7 +19,10 @@
 
 var express = require("express");
 var fs = require("fs");
+var nb = require("nedb");
 var app = express();
+
+var db = new nb();
 
 /**
  * HTML/CSS/JS Resources for the single-page dashboard application.
