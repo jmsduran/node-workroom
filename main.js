@@ -68,8 +68,47 @@ app.post("/dashboard/sections/create/:sectionid", function(request, response) {
 
 app.get("/dashboard/sections/read/:sectionid", function(request, response) {
      var sectionid = request.params.sectionid;
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"read\": \"" + sectionid + "\"}");
+
+     if (sectionid === "all") {
+          response.writeHead(200, {"Content-Type": "text/plain"});
+
+          var data = {
+               sections: [
+                    {
+                         name: "Test Section 1",
+                         links: [
+                              {
+                                   name: "google",
+                                   url: "https://www.google.com"
+                              },
+                              {
+                                   name: "cnn",
+                                   url: "https://www.cnn.com"
+                              }
+                         ]
+                    },
+                    {
+                         name: "Test Section 2",
+                         links: [
+                              {
+                                   name: "reddit",
+                                   url: "https://www.reddit.com"
+                              },
+                              {
+                                   name: "xkcd",
+                                   url: "https://www.xkcd.com"
+                              }
+                         ]
+                    }
+               ]
+          };
+
+          response.end(JSON.stringify(data));
+
+     } else {
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end("{\"read\": \"" + sectionid + "\"}");
+     }
 });
 
 app.post("/dashboard/sections/update/:sectionid", function(request, response) {

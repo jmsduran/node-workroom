@@ -83,10 +83,16 @@ table {
  */
 
 .section {
-     border-bottom: 1px solid black;
+     padding: 5px;
+}
+
+.content {
+	padding-top: 5px;
+	padding-bottom: 5px;
+	border-bottom: 1px solid black;
 }
 
 .header {
      padding-bottom: 5px;
-     border-bottom: 5px solid black;
+     border-bottom: 3px solid black;
 }
