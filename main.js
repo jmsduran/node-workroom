@@ -68,7 +68,7 @@ app.get("/js/dashboard.js", function(request, response) {
 app.put("/dashboard/sections/", function(request, response) {
      var name = request.body.name;
 
-     db.insert({"name": name, links: [], linkslen: 0}, function(err, newDoc) {
+     db.insert({"name": name, links: [], idcounter: 0}, function(err, newDoc) {
           var data = {
                "status": 200,
                "action": "create",
@@ -147,16 +147,42 @@ app.put("/dashboard/links/", function(request, response) {
      var name = request.body.name;
      var url = request.body.url;
 
-     var data = {
-          "action": "create",
-          "datatype": "link",
-          "sectionid": sectionid,
-          "name": name,
-          "url": url
-     };
+     db.find({"_id": sectionid}, function(err, docs) {
+          var idcounter = docs[0].idcounter;
+          var linkid = sectionid + "-" + idcounter;
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+          var newlink = {
+               "links": {
+                    "id": linkid,
+                    "name": name,
+                    "url": url
+               }
+          };
+
+          var incrementlink = {
+               "idcounter": 1
+          };
+
+          db.update({"_id": sectionid},
+               {
+                    "$push": newlink,
+                    "$inc": incrementlink
+               }, {},
+               function() {
+                    var data = {
+                         "action": "create",
+                         "datatype": "link",
+                         "id": linkid,
+                         "name": name,
+                         "url": url
+                    };
+
+                    response.writeHead(200,
+                         {"Content-Type": "application/json"});
+                    response.end(JSON.stringify(data));
+               }
+          );
+     });
 });
 
 // Read one via HTTP GET.
