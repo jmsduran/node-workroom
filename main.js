@@ -21,8 +21,12 @@ var express = require("express");
 var fs = require("fs");
 var nb = require("nedb");
 var app = express();
+var bodyparser = require("body-parser");
 
 var db = new nb({filename: "./server/db/appstore.db", autoload: true});
+
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded());
 
 /**
  * HTML/CSS/JS Resources for the single-page dashboard application.
@@ -60,65 +64,141 @@ app.get("/js/dashboard.js", function(request, response) {
  * CRUD REST endpoints for section data. A section can contain multiple links.
  */
 
-app.post("/dashboard/sections/create/:sectionid", function(request, response) {
-     var sectionid = request.params.sectionid;
+// Create via HTTP PUT.
+app.put("/dashboard/sections/", function(request, response) {
+     var name = request.body.name;
+
+     var data = {
+          "action": "create",
+          "datatype": "section",
+          "name": name
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"create\": \"" + sectionid + "\"}");
+     response.end(JSON.stringify(data));
 });
 
-app.get("/dashboard/sections/read/:sectionid", function(request, response) {
-     var sectionid = request.params.sectionid;
+// Read all via HTTP GET.
+app.get("/dashboard/sections/", function(request, response) {
+     var data = {
+          "action": "get",
+          "datatype": "sections"
+     };
 
-     if (sectionid === "all") {
-          db.find({}, function(err, docs) {
-               response.writeHead(200, {"Content-Type": "application/json"});
-               response.end(JSON.stringify(docs[0]));
-          });
-
-     } else {
-          response.writeHead(200, {"Content-Type": "application/json"});
-          response.end("{\"read\": \"" + sectionid + "\"}");
-     }
+     response.writeHead(200, {"Content-Type": "application/json"});
+     response.end(JSON.stringify(data));
 });
 
-app.post("/dashboard/sections/update/:sectionid", function(request, response) {
-     var sectionid = request.params.sectionid;
+// Read one via HTTP GET.
+app.get("/dashboard/sections/:sectionid", function(request, response) {
+     var id = request.params.sectionid;
+
+     var data = {
+          "action": "get",
+          "datatype": "section",
+          "id": id
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"update\": \"" + sectionid + "\"}");
+     response.end(JSON.stringify(data));
 });
 
-app.post("/dashboard/sections/delete/:sectionid", function(request, response) {
-     var sectionid = request.params.sectionid;
+// Update via HTTP POST.
+app.post("/dashboard/sections/:sectionid", function(request, response) {
+     var id = request.params.sectionid;
+     var name = request.body.name;
+
+     var data = {
+          "action": "update",
+          "datatype": "section",
+          "id": id,
+          "name": name
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"delete\": \"" + sectionid + "\"}");
+     response.end(JSON.stringify(data));
+});
+
+// Delete one via HTTP DELETE.
+app.delete("/dashboard/sections/:sectionid", function(request, response) {
+     var id = request.params.sectionid;
+
+     var data = {
+          "action": "delete",
+          "datatype": "section",
+          "id": id
+     };
+
+     response.writeHead(200, {"Content-Type": "application/json"});
+     response.end(JSON.stringify(data));
 });
 
 /**
  * CRUD REST enpoints for link data. A link can only belong to one section.
  */
 
-app.post("/dashboard/links/create/:linkid", function(request, response) {
-     var linkid = request.params.linkid;
+// Create via HTTP PUT.
+app.put("/dashboard/links/", function(request, response) {
+     var sectionid = request.body.sectionid;
+     var name = request.body.name;
+     var url = request.body.url;
+
+     var data = {
+          "action": "create",
+          "datatype": "link",
+          "sectionid": sectionid,
+          "name": name,
+          "url": url
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"create\": \"" + linkid + "\"}");
+     response.end(JSON.stringify(data));
 });
 
-app.get("/dashboard/links/read/:linkid", function(request, response) {
-     var linkid = request.params.linkid;
+// Read one via HTTP GET.
+app.get("/dashboard/links/:linkid", function(request, response) {
+     var id = request.params.linkid;
+
+     var data = {
+          "action": "get",
+          "datatype": "link",
+          "id": id
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"read\": \"" + linkid + "\"}");
+     response.end(JSON.stringify(data));
 });
 
-app.post("/dashboard/links/update/:linkid", function(request, response) {
-     var linkid = request.params.linkid;
+// Update via HTTP POST.
+app.post("/dashboard/links/:linkid", function(request, response) {
+     var id = request.params.linkid;
+     var name = request.body.name;
+     var url = request.body.url;
+
+     var data = {
+          "action": "update",
+          "datatype": "link",
+          "id": id,
+          "name": name,
+          "url": url
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"update\": \"" + linkid + "\"}");
+     response.end(JSON.stringify(data));
 });
 
-app.post("/dashboard/links/delete/:linkid", function(request, response) {
-     var linkid = request.params.linkid;
+// Delete one via HTTP DELETE.
+app.delete("/dashboard/links/:linkid", function(request, response) {
+     var id = request.params.linkid;
+
+     var data = {
+          "action": "delete",
+          "datatype": "link",
+          "id": id
+     };
+
      response.writeHead(200, {"Content-Type": "application/json"});
-     response.end("{\"delete\": \"" + linkid + "\"}");
+     response.end(JSON.stringify(data));
 });
 
 app.listen(8080);
