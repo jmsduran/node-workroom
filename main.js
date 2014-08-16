@@ -22,7 +22,7 @@ var fs = require("fs");
 var nb = require("nedb");
 var app = express();
 
-var db = new nb();
+var db = new nb({filename: "./server/db/appstore.db", autoload: true});
 
 /**
  * HTML/CSS/JS Resources for the single-page dashboard application.
@@ -70,40 +70,10 @@ app.get("/dashboard/sections/read/:sectionid", function(request, response) {
      var sectionid = request.params.sectionid;
 
      if (sectionid === "all") {
-          response.writeHead(200, {"Content-Type": "text/plain"});
-
-          var data = {
-               sections: [
-                    {
-                         name: "Test Section 1",
-                         links: [
-                              {
-                                   name: "google",
-                                   url: "https://www.google.com"
-                              },
-                              {
-                                   name: "cnn",
-                                   url: "https://www.cnn.com"
-                              }
-                         ]
-                    },
-                    {
-                         name: "Test Section 2",
-                         links: [
-                              {
-                                   name: "reddit",
-                                   url: "https://www.reddit.com"
-                              },
-                              {
-                                   name: "xkcd",
-                                   url: "https://www.xkcd.com"
-                              }
-                         ]
-                    }
-               ]
-          };
-
-          response.end(JSON.stringify(data));
+          db.find({}, function(err, docs) {
+               response.writeHead(200, {"Content-Type": "application/json"});
+               response.end(JSON.stringify(docs[0]));
+          });
 
      } else {
           response.writeHead(200, {"Content-Type": "application/json"});
