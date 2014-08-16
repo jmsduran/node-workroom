@@ -68,39 +68,36 @@ app.get("/js/dashboard.js", function(request, response) {
 app.put("/dashboard/sections/", function(request, response) {
      var name = request.body.name;
 
-     var data = {
-          "action": "create",
-          "datatype": "section",
-          "name": name
-     };
+     db.insert({"name": name, links: [], linkslen: 0}, function(err, newDoc) {
+          var data = {
+               "status": 200,
+               "action": "create",
+               "datatype": "section",
+               "id": newDoc._id,
+               "name": name
+          };
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
+     });
 });
 
 // Read all via HTTP GET.
 app.get("/dashboard/sections/", function(request, response) {
-     var data = {
-          "action": "get",
-          "datatype": "sections"
-     };
-
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+     db.find({}, function(err, docs) {
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(docs));
+     });
 });
 
 // Read one via HTTP GET.
 app.get("/dashboard/sections/:sectionid", function(request, response) {
      var id = request.params.sectionid;
 
-     var data = {
-          "action": "get",
-          "datatype": "section",
-          "id": id
-     };
-
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+    db.find({"_id": id}, function(err, docs) {
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(docs));
+     });
 });
 
 // Update via HTTP POST.
@@ -108,29 +105,36 @@ app.post("/dashboard/sections/:sectionid", function(request, response) {
      var id = request.params.sectionid;
      var name = request.body.name;
 
-     var data = {
-          "action": "update",
-          "datatype": "section",
-          "id": id,
-          "name": name
-     };
+     db.update({"_id": id}, {$set: {"name": name}}, {},
+          function(err, numReplaced) {
+               var data = {
+                    "status": 200,
+                    "action": "update",
+                    "datatype": "section",
+                    "id": id,
+                    "name": name
+               };
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+               response.writeHead(200, {"Content-Type": "application/json"});
+               response.end(JSON.stringify(data));
+          });
 });
 
 // Delete one via HTTP DELETE.
 app.delete("/dashboard/sections/:sectionid", function(request, response) {
      var id = request.params.sectionid;
 
-     var data = {
-          "action": "delete",
-          "datatype": "section",
-          "id": id
-     };
+     db.remove({"_id": id}, {}, function(err, numRemoved) {
+          var data = {
+               "status": 200,
+               "action": "delete",
+               "datatype": "section",
+               "id": id
+          };
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
+     });
 });
 
 /**
