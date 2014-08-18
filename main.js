@@ -96,7 +96,9 @@ app.get("/dashboard/sections/:sectionid", function(request, response) {
 
     db.find({"_id": id}, function(err, docs) {
           response.writeHead(200, {"Content-Type": "application/json"});
-          response.end(JSON.stringify(docs));
+
+          // Return the first element since only one document will be returned.
+          response.end(JSON.stringify(docs[0]));
      });
 });
 
@@ -151,6 +153,8 @@ app.put("/dashboard/links/", function(request, response) {
           var idcounter = docs[0].idcounter;
           var linkid = sectionid + "-" + idcounter;
 
+          // Create the new link, assigning it a unique id, which is a
+          // combination of the parent sections and current id counter value.
           var newlink = {
                "links": {
                     "id": linkid,
@@ -159,10 +163,12 @@ app.put("/dashboard/links/", function(request, response) {
                }
           };
 
+          // Increment the link id counter.
           var incrementlink = {
                "idcounter": 1
           };
 
+          // Append the new link into the parent section's links array.
           db.update({"_id": sectionid},
                {
                     "$push": newlink,
@@ -189,14 +195,20 @@ app.put("/dashboard/links/", function(request, response) {
 app.get("/dashboard/links/:linkid", function(request, response) {
      var id = request.params.linkid;
 
-     var data = {
-          "action": "get",
-          "datatype": "link",
-          "id": id
-     };
+     db.find({"links.id": id}, function(err, docs) {
+          var data = {};
+          var links = docs[0].links;
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+          for (var i = 0; i < links.length; ++i) {
+               if (links[i].id === id) {
+                   data = links[i];
+                   break;
+               }
+          }
+
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
+     });
 });
 
 // Update via HTTP POST.
@@ -204,31 +216,72 @@ app.post("/dashboard/links/:linkid", function(request, response) {
      var id = request.params.linkid;
      var name = request.body.name;
      var url = request.body.url;
+     var idarray = id.split("-");
 
-     var data = {
-          "action": "update",
-          "datatype": "link",
-          "id": id,
-          "name": name,
-          "url": url
-     };
+     // Delete the link.
+     db.update({"_id": idarray[0]}, {"$pull": {"links": {"id": id}}}, {},
+          function() {
+               // Create a new link, which has the same id of the deleted one.
+               db.find({"_id": idarray[0]}, function(err, docs) {
+                    var linkid = id;
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+                    // Create the new link, assigning it a unique id, which is a
+                    // combination of the parent sections and current id counter value.
+                    var newlink = {
+                         "links": {
+                              "id": linkid,
+                              "name": name,
+                              "url": url
+                         }
+                    };
+
+                    // Increment the link id counter.
+                    var incrementlink = {
+                         "idcounter": 1
+                    };
+
+                    // Append the new link into the parent section's links array.
+                    db.update({"_id": idarray[0]},
+                         {
+                              "$push": newlink
+                         }, {},
+                         function() {
+                              var data = {
+                                   "action": "update",
+                                   "datatype": "link",
+                                   "id": linkid,
+                                   "name": name,
+                                   "url": url
+                              };
+
+                              response.writeHead(200,
+                                   {"Content-Type": "application/json"});
+                              response.end(JSON.stringify(data));
+                         }
+                    );
+               });
+          }
+     );
 });
 
 // Delete one via HTTP DELETE.
 app.delete("/dashboard/links/:linkid", function(request, response) {
      var id = request.params.linkid;
+     var idarray = id.split("-");
 
-     var data = {
-          "action": "delete",
-          "datatype": "link",
-          "id": id
-     };
+     db.update({"_id": idarray[0]}, {"$pull": {"links": {"id": id}}}, {},
+          function() {
+               var data = {
+                    "status": 200,
+                    "action": "delete",
+                    "datatype": "link",
+                    "id": id
+               };
 
-     response.writeHead(200, {"Content-Type": "application/json"});
-     response.end(JSON.stringify(data));
+               response.writeHead(200, {"Content-Type": "application/json"});
+               response.end(JSON.stringify(data));
+          }
+     );
 });
 
 app.listen(8080);
