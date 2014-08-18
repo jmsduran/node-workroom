@@ -20,9 +20,7 @@
 $(document).ready(function() {
 
      var createHeader = function(sectionName, appendTo) {
-          $("<div/>", {
-               "class": "header"
-          }).html(sectionName).appendTo(appendTo);
+          $("<h2/>").html(sectionName).appendTo(appendTo);
      };
 
      var createLink = function(link, appendTo) {
@@ -33,7 +31,7 @@ $(document).ready(function() {
 
      var createContentSection = function(links, sectionIndex) {
           $("<div/>", {
-               "class": "content",
+               "class": "ui raised segment",
                "id": "content-" + sectionIndex
           }).appendTo("#section-" + sectionIndex);
 
@@ -51,8 +49,8 @@ $(document).ready(function() {
      };
 
      var createSection = function(data) {
-          for (var i = 0; i < data.sections.length; ++i) {
-               var section = data.sections[i];
+          for (var i = 0; i < data.length; ++i) {
+               var section = data[i];
                var links = section.links;
 
                $("<div/>", {
@@ -65,7 +63,7 @@ $(document).ready(function() {
           }
      };
 
-     $.get("/dashboard/sections/read/all", function(data) {
+     $.get("/dashboard/sections/", function(data) {
           createSection(data);
      }, "json");
 });
