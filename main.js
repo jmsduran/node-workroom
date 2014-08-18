@@ -39,22 +39,29 @@ app.get("/", function(request, response) {
      });
 });
 
-app.get("/css/dashboard.css", function(request, response) {
-     fs.readFile("./client/css/dashboard.css", function(err, data) {
+app.get("/semantic-ui/semantic.min.css", function(request, response) {
+     fs.readFile("./client/semantic-ui/css/semantic.min.css", function(err, data) {
           response.writeHead(200, {"Content-Type": "text/css"});
           response.end(data);
      });
 });
 
-app.get("/js/jquery/1.11.1/jquery.min.js", function(request, response) {
-     fs.readFile("./client/js/jquery/1.11.1/jquery.min.js", function(err, data) {
+app.get("/jquery/1.11.1/jquery.min.js", function(request, response) {
+     fs.readFile("./client/jquery/1.11.1/jquery.min.js", function(err, data) {
           response.writeHead(200, {"Content-Type": "text/javascript"});
           response.end(data);
      });
 });
 
-app.get("/js/dashboard.js", function(request, response) {
-     fs.readFile("./client/js/dashboard.js", function(err, data) {
+app.get("/semantic-ui/semantic.min.js", function(request, response) {
+     fs.readFile("./client/semantic-ui/javascript/semantic.min.js", function(err, data) {
+          response.writeHead(200, {"Content-Type": "text/javascript"});
+          response.end(data);
+     });
+});
+
+app.get("/app/dashboard.js", function(request, response) {
+     fs.readFile("./client/app/dashboard.js", function(err, data) {
           response.writeHead(200, {"Content-Type": "text/javascript"});
           response.end(data);
      });
