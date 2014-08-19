@@ -19,32 +19,74 @@
 
 $(document).ready(function() {
 
-     var createHeader = function(sectionName, appendTo) {
-          $("<h2/>").html(sectionName).appendTo(appendTo);
+     var createHeader = function(sectionName, sectionid) {
+          $("<h2/>", {
+              "id": sectionid + "-header"
+          }).html(sectionName).appendTo("#" + sectionid);
+
+          $("<div/>", {
+               "id": sectionid + "-delete",
+               "class": "mini ui button"
+          }).html("Delete").appendTo("#" + sectionid + "-header");
+
+          $("#" + sectionid + "-delete").click(function() {
+               $("#delete-section-modal").modal("show");
+
+               $("#delete-section-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-" + sectionid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#delete-section-actions");
+
+               $("<div/>", {
+                    "id": "delete-" + sectionid,
+                    "class": "ui red button"
+               }).html("Delete").appendTo("#delete-section-actions");
+
+               $("#delete-section-id").val(sectionid);
+               $("#delete-section-label").html(sectionName);
+          });
+
+          $(document).on("click", "#delete-" + sectionid,function() {
+               $.ajax({
+                    url: "/dashboard/sections/" + $("#delete-section-id").val(),
+                    type: "DELETE",
+                    success: function(result) {
+                         $("#delete-section-modal").modal("hide");
+                         refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-" + sectionid, function() {
+               $("#delete-section-modal").modal("hide");
+          });
      };
 
      var createLink = function(link, appendTo) {
           $("<a/>", {
+               "id": link.id,
                "href": link.url
           }).html(link.name).appendTo(appendTo);
      };
 
-     var createContentSection = function(links, sectionIndex) {
+     var createContentSection = function(links, sectionid) {
           $("<div/>", {
                "class": "ui raised segment",
-               "id": "content-" + sectionIndex
-          }).appendTo("#section-" + sectionIndex);
+               "id": sectionid + "-content"
+          }).appendTo("#" + sectionid);
 
-          $("<ul/>").appendTo("#content-" + sectionIndex);
+          $("<ul/>").appendTo("#" + sectionid + "-content");
 
           for (var j = 0; j < links.length; ++j) {
                var link = links[j];
 
                $("<li/>", {
-                    "id": "section-" + sectionIndex + "-link-" + j
-               }).appendTo("#content-" + sectionIndex + " ul");
+                    "id": link.id + "-entry"
+               }).appendTo("#" + sectionid + "-content");
 
-               createLink(link, "#section-" + sectionIndex + "-link-" + j);
+               createLink(link, "#" + link.id + "-entry");
           }
      };
 
@@ -54,16 +96,41 @@ $(document).ready(function() {
                var links = section.links;
 
                $("<div/>", {
-                    "class": "section",
-                    "id": "section-" + i
-               }).appendTo("body");
+                    "id": section._id
+               }).appendTo("#dashboard-content");
 
-               createHeader(section.name, "#section-" + i);
-               createContentSection(links, i);
+               createHeader(section.name, section._id);
+               createContentSection(links, section._id);
           }
      };
 
-     $.get("/dashboard/sections/", function(data) {
-          createSection(data);
-     }, "json");
+     var refreshPage = function() {
+          $("#dashboard-content").html("");
+          $.get("/dashboard/sections/", function(data) {
+               createSection(data);
+          }, "json");
+     };
+
+     $("#new-section").click(function() {
+          $("#new-section-modal").modal("show");
+     });
+
+     $("#new-section-cancel").click(function() {
+          $("#new-section-modal").modal("hide");
+     });
+
+     $("#new-section-create").click(function() {
+          $.ajax({
+               url: "/dashboard/sections",
+               type: "PUT",
+               data: {
+                    name: $("#new-section-name").val()
+               },
+               success: function(result) {
+                    refreshPage();
+               }
+          });
+     });
+
+     refreshPage();
 });

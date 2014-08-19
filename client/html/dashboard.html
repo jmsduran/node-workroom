@@ -1,11 +1,51 @@
 <html>
      <head>
           <title>My Workroom</title>
-          <link rel="stylesheet" type="text/css" href="/semantic-ui/semantic.min.css"></link>
+          <link rel="stylesheet" type="text/css" href="/semantic-ui/css/semantic.min.css"></link>
           <script type="text/javascript" src="jquery/1.11.1/jquery.min.js"></script>
-          <script type="text/javascript" src="/semantic-ui/semantic.min.js"></script>
+          <script type="text/javascript" src="/semantic-ui/javascript/semantic.min.js"></script>
           <script type="text/javascript" src="/app/dashboard.js"></script>
      </head>
      <body>
+          <style type="text/css">
+               body {
+                    font-style: normal;
+                    font-variant: normal;
+                    font-weight: normal;
+                    font-size: 16px;
+                    line-height: none;
+                    font-family: sans-serif;
+               }
+          </style>
+
+          <div id="new-section" class="ui button">New Section</div>
+
+          <div id="new-section-modal" class="ui modal">
+               <div class="header">
+                    New Section
+               </div>
+               <div class="content">
+                    <div class="ui input">
+                         <input id="new-section-name" type="text" placeholder="Name.."/>
+                    </div>
+               </div>
+               <div class="actions">
+                    <div id="new-section-cancel" class="ui button">
+                         Cancel
+                    </div>
+                    <div id="new-section-create" class="ui blue button">
+                         Create
+                    </div>
+               </div>
+          </div>
+
+          <div id="delete-section-modal" class="ui basic modal">
+               <input type="hidden" id="delete-section-id" value="" />
+               Are you sure you want to delete section <b id="delete-section-label"></b>?
+               <div id="delete-section-actions" class="actions">
+               </div>
+          </div>
+
+          <div id="dashboard-content"></div>
      </body>
 </html>
