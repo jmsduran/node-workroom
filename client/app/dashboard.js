@@ -103,6 +103,56 @@ $(document).ready(function() {
           });
      };
 
+     var configureAddLinkButton = function(sectionid) {
+          $("<div/>", {
+               "id": sectionid + "-create-link",
+               "class": "mini ui button"
+          }).html("Add Link").appendTo("#" + sectionid + "-content");
+
+          $("#" + sectionid + "-create-link").click(function() {
+               $("#create-link-modal").modal("show");
+
+               $("#new-link-actions").html("");
+               $("#new-link-name").val("");
+               $("#new-link-url").val("");
+               $("#new-link-section-id").val(sectionid);
+
+               $("#create-link-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-create-link-" + sectionid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#new-link-actions");
+
+               $("<div/>", {
+                    "id": "create-link-" + sectionid,
+                    "class": "ui blue button"
+               }).html("Add").appendTo("#new-link-actions");
+
+               $("#new-link-section-id").val(sectionid);
+          });
+
+          $(document).on("click", "#create-link-" + sectionid, function() {
+               $.ajax({
+                    url: "/dashboard/links",
+                    type: "PUT",
+                    data: {
+                         "name": $("#new-link-name").val(),
+                         "url": $("#new-link-url").val(),
+                         "sectionid": $("#new-link-section-id").val()
+                    },
+                    success: function() {
+                         $("#create-link-modal").modal("hide");
+                         refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-create-link-" + sectionid, function() {
+               $("#create-link-modal").modal("hide");
+          });
+     };
+
      var createHeader = function(sectionName, sectionid) {
           $("<h2/>", {
               "id": sectionid + "-header"
@@ -149,6 +199,7 @@ $(document).ready(function() {
 
                createHeader(section.name, section._id);
                createContentSection(links, section._id);
+               configureAddLinkButton(section._id);
           }
      };
 
