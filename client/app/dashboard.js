@@ -18,12 +18,51 @@
  */
 
 $(document).ready(function() {
+     var configureEditSectionButton = function(sectionid, sectionName) {
+          $("<div/>", {
+               "id": sectionid + "-edit",
+               "class": "mini ui button"
+          }).html("Edit").appendTo("#" + sectionid + "-header");
 
-     var createHeader = function(sectionName, sectionid) {
-          $("<h2/>", {
-              "id": sectionid + "-header"
-          }).html(sectionName).appendTo("#" + sectionid);
+          $("#" + sectionid + "-edit").click(function() {
+               $("#edit-section-modal").modal("show");
 
+               $("#edit-section-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-edit-" + sectionid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#edit-section-actions");
+
+               $("<div/>", {
+                    "id": "edit-" + sectionid,
+                    "class": "ui blue button"
+               }).html("Update").appendTo("#edit-section-actions");
+
+               $("#edit-section-name").val(sectionName);
+               $("#edit-section-id").val(sectionid);
+          });
+
+          $(document).on("click", "#edit-" + sectionid, function() {
+               $.ajax({
+                    url: "/dashboard/sections/" + $("#edit-section-id").val(),
+                    type: "POST",
+                    data: {
+                         "name":  $("#edit-section-name").val()
+                    },
+                    success: function(result) {
+                         $("#edit-section-modal").modal("hide");
+                         refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-edit-" + sectionid, function() {
+               $("#edit-section-modal").modal("hide");
+          });
+     };
+
+     var configureDeleteSectionButton = function(sectionid, sectionName) {
           $("<div/>", {
                "id": sectionid + "-delete",
                "class": "mini ui button"
@@ -35,7 +74,7 @@ $(document).ready(function() {
                $("#delete-section-actions").html("");
 
                $("<div/>", {
-                    "id": "cancel-" + sectionid,
+                    "id": "cancel-delete-" + sectionid,
                     "class": "ui button"
                }).html("Cancel").appendTo("#delete-section-actions");
 
@@ -56,12 +95,21 @@ $(document).ready(function() {
                          $("#delete-section-modal").modal("hide");
                          refreshPage();
                     }
-               });
+               })
           });
 
-          $(document).on("click", "#cancel-" + sectionid, function() {
+          $(document).on("click", "#cancel-delete-" + sectionid, function() {
                $("#delete-section-modal").modal("hide");
           });
+     };
+
+     var createHeader = function(sectionName, sectionid) {
+          $("<h2/>", {
+              "id": sectionid + "-header"
+          }).html(sectionName).appendTo("#" + sectionid);
+
+          configureEditSectionButton(sectionid, sectionName);
+          configureDeleteSectionButton(sectionid, sectionName);
      };
 
      var createLink = function(link, appendTo) {
@@ -106,6 +154,7 @@ $(document).ready(function() {
 
      var refreshPage = function() {
           $("#dashboard-content").html("");
+          $(document).unbind();
           $.get("/dashboard/sections/", function(data) {
                createSection(data);
           }, "json");
@@ -113,6 +162,7 @@ $(document).ready(function() {
 
      $("#new-section").click(function() {
           $("#new-section-modal").modal("show");
+          $("#new-section-name").val("");
      });
 
      $("#new-section-cancel").click(function() {
