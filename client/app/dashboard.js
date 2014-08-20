@@ -103,6 +103,47 @@ $(document).ready(function() {
           });
      };
 
+     var configureDeleteLinkButton = function(linkid, linkName) {
+          $("<div/>", {
+               "id": linkid + "-delete",
+               "class": "mini ui button"
+          }).html("Delete").appendTo("#" + linkid + "-entry");
+
+          $("#" + linkid + "-delete").click(function() {
+               $("#delete-link-modal").modal("show");
+
+               $("#delete-link-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-delete-" + linkid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#delete-link-actions");
+
+               $("<div/>", {
+                    "id": "delete-" + linkid,
+                    "class": "ui red button"
+               }).html("Delete").appendTo("#delete-link-actions");
+
+               $("#delete-link-id").val(linkid);
+               $("#delete-link-label").html(linkName);
+          });
+
+          $(document).on("click", "#delete-" + linkid,function() {
+               $.ajax({
+                    url: "/dashboard/links/" + $("#delete-link-id").val(),
+                    type: "DELETE",
+                    success: function(result) {
+                         $("#delete-link-modal").modal("hide");
+                         refreshPage();
+                    }
+               })
+          });
+
+          $(document).on("click", "#cancel-delete-" + linkid, function() {
+               $("#delete-link-modal").modal("hide");
+          });
+     };
+
      var configureAddLinkButton = function(sectionid) {
           $("<div/>", {
                "id": sectionid + "-create-link",
@@ -185,6 +226,7 @@ $(document).ready(function() {
                }).appendTo("#" + sectionid + "-content");
 
                createLink(link, "#" + link.id + "-entry");
+               configureDeleteLinkButton(link.id, link.name);
           }
      };
 
