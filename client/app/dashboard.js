@@ -21,7 +21,7 @@ $(document).ready(function() {
      var configureEditSectionButton = function(sectionid, sectionName) {
           $("<div/>", {
                "id": sectionid + "-edit",
-               "class": "mini ui button"
+               "class": "mini ui default button"
           }).html("Edit").appendTo("#" + sectionid + "-header");
 
           $("#" + sectionid + "-edit").click(function() {
@@ -65,7 +65,7 @@ $(document).ready(function() {
      var configureDeleteSectionButton = function(sectionid, sectionName) {
           $("<div/>", {
                "id": sectionid + "-delete",
-               "class": "mini ui button"
+               "class": "mini ui default button"
           }).html("Delete").appendTo("#" + sectionid + "-header");
 
           $("#" + sectionid + "-delete").click(function() {
@@ -106,7 +106,7 @@ $(document).ready(function() {
      var configureEditLinkButton = function(linkid, linkName, linkURL) {
           $("<div/>", {
                "id": linkid + "-edit",
-               "class": "mini ui button"
+               "class": "mini ui default button"
           }).html("Edit").appendTo("#" + linkid + "-entry");
 
           $("#" + linkid + "-edit").click(function() {
@@ -152,7 +152,7 @@ $(document).ready(function() {
      var configureDeleteLinkButton = function(linkid, linkName) {
           $("<div/>", {
                "id": linkid + "-delete",
-               "class": "mini ui button"
+               "class": "mini ui default button"
           }).html("Delete").appendTo("#" + linkid + "-entry");
 
           $("#" + linkid + "-delete").click(function() {
@@ -193,7 +193,7 @@ $(document).ready(function() {
      var configureAddLinkButton = function(sectionid) {
           $("<div/>", {
                "id": sectionid + "-create-link",
-               "class": "mini ui button"
+               "class": "mini ui default button"
           }).html("Add Link").appendTo("#" + sectionid + "-content");
 
           $("#" + sectionid + "-create-link").click(function() {
@@ -320,6 +320,10 @@ $(document).ready(function() {
                     refreshPage();
                }
           });
+     });
+
+     $("#toggle-visibility-button").click(function() {
+          $(".default").toggle();
      });
 
      refreshPage();
