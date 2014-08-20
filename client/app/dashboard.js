@@ -103,6 +103,52 @@ $(document).ready(function() {
           });
      };
 
+     var configureEditLinkButton = function(linkid, linkName, linkURL) {
+          $("<div/>", {
+               "id": linkid + "-edit",
+               "class": "mini ui button"
+          }).html("Edit").appendTo("#" + linkid + "-entry");
+
+          $("#" + linkid + "-edit").click(function() {
+               $("#edit-link-modal").modal("show");
+
+               $("#edit-link-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-edit-" + linkid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#edit-link-actions");
+
+               $("<div/>", {
+                    "id": "edit-" + linkid,
+                    "class": "ui blue button"
+               }).html("Update").appendTo("#edit-link-actions");
+
+               $("#edit-link-name").val(linkName);
+               $("#edit-link-url").val(linkURL);
+               $("#edit-link-id").val(linkid);
+          });
+
+          $(document).on("click", "#edit-" + linkid, function() {
+               $.ajax({
+                    url: "/dashboard/links/" + $("#edit-link-id").val(),
+                    type: "POST",
+                    data: {
+                         "name":  $("#edit-link-name").val(),
+                         "url": $("#edit-link-url").val()
+                    },
+                    success: function(result) {
+                         $("#edit-link-modal").modal("hide");
+                         refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-edit-" + linkid, function() {
+               $("#edit-link-modal").modal("hide");
+          });
+     };
+
      var configureDeleteLinkButton = function(linkid, linkName) {
           $("<div/>", {
                "id": linkid + "-delete",
@@ -226,6 +272,7 @@ $(document).ready(function() {
                }).appendTo("#" + sectionid + "-content");
 
                createLink(link, "#" + link.id + "-entry");
+               configureEditLinkButton(link.id, link.name, link.url);
                configureDeleteLinkButton(link.id, link.name);
           }
      };
