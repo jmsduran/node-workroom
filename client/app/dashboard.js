@@ -242,7 +242,8 @@ $(document).ready(function() {
 
      var createHeader = function(sectionName, sectionid) {
           $("<h2/>", {
-              "id": sectionid + "-header"
+              "id": sectionid + "-header",
+              "class": "ui top attached header"
           }).html(sectionName).appendTo("#" + sectionid);
 
           configureEditSectionButton(sectionid, sectionName);
@@ -253,12 +254,17 @@ $(document).ready(function() {
           $("<a/>", {
                "id": link.id,
                "href": link.url
-          }).html(link.name).appendTo(appendTo);
+          }).html(link.name).click(function (e) {
+               e.preventDefault();
+               e.stopPropagation();
+               console.log($(this).attr("href") + " clicked!");
+          }).appendTo(appendTo);
+
      };
 
      var createContentSection = function(links, sectionid) {
           $("<div/>", {
-               "class": "ui raised segment",
+               "class": "ui segment attached",
                "id": sectionid + "-content"
           }).appendTo("#" + sectionid);
 
@@ -283,7 +289,8 @@ $(document).ready(function() {
                var links = section.links;
 
                $("<div/>", {
-                    "id": section._id
+                    "id": section._id,
+                    "class": "column"
                }).appendTo("#dashboard-content");
 
                createHeader(section.name, section._id);
