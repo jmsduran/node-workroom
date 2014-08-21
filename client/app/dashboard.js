@@ -21,8 +21,8 @@ $(document).ready(function() {
      var configureEditSectionButton = function(sectionid, sectionName) {
           $("<div/>", {
                "id": sectionid + "-edit",
-               "class": "mini ui default button"
-          }).html("Edit").appendTo("#" + sectionid + "-header");
+               "class": "mini ui default button left-button-spacing"
+          }).html("Edit").appendTo("#" + sectionid + "-header-buttons");
 
           $("#" + sectionid + "-edit").click(function() {
                $("#edit-section-modal").modal("show");
@@ -66,7 +66,7 @@ $(document).ready(function() {
           $("<div/>", {
                "id": sectionid + "-delete",
                "class": "mini ui default button"
-          }).html("Delete").appendTo("#" + sectionid + "-header");
+          }).html("Delete").appendTo("#" + sectionid + "-header-buttons");
 
           $("#" + sectionid + "-delete").click(function() {
                $("#delete-section-modal").modal("show");
@@ -106,8 +106,8 @@ $(document).ready(function() {
      var configureEditLinkButton = function(linkid, linkName, linkURL) {
           $("<div/>", {
                "id": linkid + "-edit",
-               "class": "mini ui default button"
-          }).html("Edit").appendTo("#" + linkid + "-entry");
+               "class": "mini ui default button left-button-spacing"
+          }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {
                $("#edit-link-modal").modal("show");
@@ -153,7 +153,7 @@ $(document).ready(function() {
           $("<div/>", {
                "id": linkid + "-delete",
                "class": "mini ui default button"
-          }).html("Delete").appendTo("#" + linkid + "-entry");
+          }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-delete").click(function() {
                $("#delete-link-modal").modal("show");
@@ -246,6 +246,11 @@ $(document).ready(function() {
               "class": "ui top attached header"
           }).html(sectionName).appendTo("#" + sectionid);
 
+          $("<span/>", {
+              "id": sectionid + "-header-buttons",
+              "style": "display: inline-block;"
+          }).appendTo("#" + sectionid + "-header");
+
           configureEditSectionButton(sectionid, sectionName);
           configureDeleteSectionButton(sectionid, sectionName);
      };
@@ -258,6 +263,11 @@ $(document).ready(function() {
                e.preventDefault();
                e.stopPropagation();
                console.log($(this).attr("href") + " clicked!");
+          }).appendTo(appendTo);
+
+          $("<span/>", {
+               "id": link.id + "-entry-buttons",
+               "style": "display: inline-block;"
           }).appendTo(appendTo);
 
      };
