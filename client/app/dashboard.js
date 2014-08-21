@@ -36,7 +36,7 @@ $(document).ready(function() {
 
                $("<div/>", {
                     "id": "edit-" + sectionid,
-                    "class": "ui blue button"
+                    "class": "ui teal button"
                }).html("Update").appendTo("#edit-section-actions");
 
                $("#edit-section-name").val(sectionName);
@@ -121,7 +121,7 @@ $(document).ready(function() {
 
                $("<div/>", {
                     "id": "edit-" + linkid,
-                    "class": "ui blue button"
+                    "class": "ui teal button"
                }).html("Update").appendTo("#edit-link-actions");
 
                $("#edit-link-name").val(linkName);
@@ -213,7 +213,7 @@ $(document).ready(function() {
 
                $("<div/>", {
                     "id": "create-link-" + sectionid,
-                    "class": "ui blue button"
+                    "class": "ui teal button"
                }).html("Add").appendTo("#new-link-actions");
 
                $("#new-link-section-id").val(sectionid);
