@@ -284,24 +284,31 @@ app.post("/dashboard/links/:linkid", function(request, response) {
      });
 });
 
+var deleteLink = function(linkid, callback) {
+     var idarray = linkid.split("-");
+
+     db.update({"_id": idarray[0]}, {"$pull": {"links": {"id": linkid}}}, {},
+          function() {
+               callback(linkid);
+          }
+     );
+};
+
 // Delete one via HTTP DELETE.
 app.delete("/dashboard/links/:linkid", function(request, response) {
      var id = request.params.linkid;
-     var idarray = id.split("-");
 
-     db.update({"_id": idarray[0]}, {"$pull": {"links": {"id": id}}}, {},
-          function() {
-               var data = {
-                    "status": 200,
-                    "action": "delete",
-                    "datatype": "link",
-                    "id": id
-               };
+     deleteLink(id, function(linkid) {
+          var data = {
+               "status": 200,
+               "action": "delete",
+               "datatype": "link",
+               "id": linkid
+          };
 
-               response.writeHead(200, {"Content-Type": "application/json"});
-               response.end(JSON.stringify(data));
-          }
-     );
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
+     })
 });
 
 /**
@@ -341,6 +348,46 @@ app.get("/dashboard/notes/:noteid", function(request, response) {
       notesdb.find({"id": noteid}, function(err, docs) {
           response.writeHead(200, {"Content-Type": "application/json"});
           response.end(JSON.stringify(docs[0]));
+     });
+});
+
+app.post("/dashboard/notes/:noteid", function(request, response) {
+     var linkid = request.params.noteid;
+     var name = request.body.name;
+     var content = request.body.content;
+
+     updateLink(linkid, name, "notes/" + linkid, function() {
+          notesdb.update({"id": linkid}, {$set: {"name": name, "content": content}}, {},
+          function(err, numReplaced) {
+               var data = {
+                    "status": 200,
+                    "action": "update",
+                    "datatype": "note",
+                    "id": linkid,
+                    "name": name
+               };
+
+               response.writeHead(200, {"Content-Type": "application/json"});
+               response.end(JSON.stringify(data));
+          });
+     });
+});
+
+app.delete("/dashboard/notes/:noteid", function(request, response) {
+     var noteid = request.params.noteid;
+
+     deleteLink(noteid, function(linkid) {
+        notesdb.remove({"id": noteid}, {}, function(err, numRemoved) {
+               var data = {
+                    "status": 200,
+                    "action": "delete",
+                    "datatype": "note",
+                    "id": linkid
+               };
+
+               response.writeHead(200, {"Content-Type": "application/json"});
+               response.end(JSON.stringify(data));
+          });
      });
 });
 
