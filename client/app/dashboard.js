@@ -256,14 +256,15 @@ $(document).ready(function() {
      };
 
      var createLink = function(link, appendTo) {
-          $("<a/>", {
-               "id": link.id,
-               "href": link.url
-          }).html(link.name).click(function (e) {
+          /*.click(function (e) {
                e.preventDefault();
                e.stopPropagation();
                console.log($(this).attr("href") + " clicked!");
-          }).appendTo(appendTo);
+          })*/
+          $("<a/>", {
+               "id": link.id,
+               "href": link.url
+          }).html(link.name).appendTo(appendTo);
 
           $("<span/>", {
                "id": link.id + "-entry-buttons",

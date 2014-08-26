@@ -24,6 +24,7 @@ var app = express();
 var bodyparser = require("body-parser");
 
 var db = new nb({filename: "./server/db/appstore.db", autoload: true});
+var notesdb = new nb({filename: "./server/db/notestore.db", autoload: true});
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded());
@@ -150,12 +151,7 @@ app.delete("/dashboard/sections/:sectionid", function(request, response) {
  * CRUD REST enpoints for link data. A link can only belong to one section.
  */
 
-// Create via HTTP PUT.
-app.put("/dashboard/links/", function(request, response) {
-     var sectionid = request.body.sectionid;
-     var name = request.body.name;
-     var url = request.body.url;
-
+var createLink = function(sectionid, name, url, callback) {
      db.find({"_id": sectionid}, function(err, docs) {
           var idcounter = docs[0].idcounter;
           var linkid = sectionid + "-" + idcounter;
@@ -182,19 +178,29 @@ app.put("/dashboard/links/", function(request, response) {
                     "$inc": incrementlink
                }, {},
                function() {
-                    var data = {
-                         "action": "create",
-                         "datatype": "link",
-                         "id": linkid,
-                         "name": name,
-                         "url": url
-                    };
-
-                    response.writeHead(200,
-                         {"Content-Type": "application/json"});
-                    response.end(JSON.stringify(data));
+                    callback(linkid);
                }
           );
+     });
+};
+
+// Create via HTTP PUT.
+app.put("/dashboard/links/", function(request, response) {
+     var sectionid = request.body.sectionid;
+     var name = request.body.name;
+     var url = request.body.url;
+
+     createLink(sectionid, name, url, function(linkid) {
+          var data = {
+               "action": "create",
+               "datatype": "link",
+               "id": linkid,
+               "name": name,
+               "url": url
+          };
+
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
      });
 });
 
@@ -218,11 +224,7 @@ app.get("/dashboard/links/:linkid", function(request, response) {
      });
 });
 
-// Update via HTTP POST.
-app.post("/dashboard/links/:linkid", function(request, response) {
-     var id = request.params.linkid;
-     var name = request.body.name;
-     var url = request.body.url;
+var updateLink = function(id, name, url, callback) {
      var idarray = id.split("-");
 
      // Delete the link.
@@ -253,22 +255,33 @@ app.post("/dashboard/links/:linkid", function(request, response) {
                               "$push": newlink
                          }, {},
                          function() {
-                              var data = {
-                                   "action": "update",
-                                   "datatype": "link",
-                                   "id": linkid,
-                                   "name": name,
-                                   "url": url
-                              };
-
-                              response.writeHead(200,
-                                   {"Content-Type": "application/json"});
-                              response.end(JSON.stringify(data));
+                              callback();
                          }
                     );
                });
           }
      );
+};
+
+// Update via HTTP POST.
+app.post("/dashboard/links/:linkid", function(request, response) {
+     var id = request.params.linkid;
+     var name = request.body.name;
+     var url = request.body.url;
+
+     updateLink(id, name, url, function() {
+          var data = {
+               "status": 200,
+               "action": "update",
+               "datatype": "link",
+               "id": id,
+               "name": name,
+               "url": url
+          };
+
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
+     });
 });
 
 // Delete one via HTTP DELETE.
@@ -289,6 +302,46 @@ app.delete("/dashboard/links/:linkid", function(request, response) {
                response.end(JSON.stringify(data));
           }
      );
+});
+
+/**
+ * CRUD REST enpoints for notes data. A note can only belong to one section.
+ */
+
+app.put("/dashboard/notes/", function(request, response) {
+     var sectionid = request.body.sectionid;
+     var name = request.body.name;
+     var content = request.body.content;
+
+     // Create the link for the note.
+     createLink(sectionid, name, "tmp-note/" + sectionid, function(linkid) {
+          // Update the link and set its url to notes/{linkid}
+          updateLink(linkid, name, "notes/" + linkid, function() {
+               notesdb.insert({"id": linkid, "name": name, "content": content},
+                    function(err, newDoc) {
+                         var data = {
+                              "status": 200,
+                              "action": "create",
+                              "datatype": "note",
+                              "id": linkid
+                         };
+
+                         response.writeHead(200, {"Content-Type": "application/json"});
+                         response.end(JSON.stringify(data));
+                    }
+               );
+
+          });
+     })
+});
+
+app.get("/dashboard/notes/:noteid", function(request, response) {
+     var noteid = request.params.noteid;
+
+      notesdb.find({"id": noteid}, function(err, docs) {
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(docs[0]));
+     });
 });
 
 app.listen(8080);
