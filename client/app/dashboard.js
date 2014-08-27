@@ -261,10 +261,23 @@ $(document).ready(function() {
                e.stopPropagation();
                console.log($(this).attr("href") + " clicked!");
           })*/
-          $("<a/>", {
+          var linkElement = $("<a/>", {
                "id": link.id,
                "href": link.url
-          }).html(link.name).appendTo(appendTo);
+          });
+
+          if (typeof(link.type) === "undefined" || link.type === "external-url") {
+               console.log(link.id + ", " + link.name + " is an external-url.");
+
+          } else if (link.type === "internal-note") {
+               console.log(link.id + ", " + link.name + " is an internal-note.");
+
+          } else {
+
+               console.log(link.id + ", " + link.name + " is an unrecognized link type");
+          }
+
+          linkElement.html(link.name).appendTo(appendTo);
 
           $("<span/>", {
                "id": link.id + "-entry-buttons",

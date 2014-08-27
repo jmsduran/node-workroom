@@ -151,7 +151,7 @@ app.delete("/dashboard/sections/:sectionid", function(request, response) {
  * CRUD REST enpoints for link data. A link can only belong to one section.
  */
 
-var createLink = function(sectionid, name, url, callback) {
+var createLink = function(type, sectionid, name, url, callback) {
      db.find({"_id": sectionid}, function(err, docs) {
           var idcounter = docs[0].idcounter;
           var linkid = sectionid + "-" + idcounter;
@@ -161,6 +161,7 @@ var createLink = function(sectionid, name, url, callback) {
           var newlink = {
                "links": {
                     "id": linkid,
+                    "type": type,
                     "name": name,
                     "url": url
                }
@@ -189,8 +190,9 @@ app.put("/dashboard/links/", function(request, response) {
      var sectionid = request.body.sectionid;
      var name = request.body.name;
      var url = request.body.url;
+     var type = "external-url";
 
-     createLink(sectionid, name, url, function(linkid) {
+     createLink(type, sectionid, name, url, function(linkid) {
           var data = {
                "action": "create",
                "datatype": "link",
@@ -224,7 +226,7 @@ app.get("/dashboard/links/:linkid", function(request, response) {
      });
 });
 
-var updateLink = function(id, name, url, callback) {
+var updateLink = function(type, id, name, url, callback) {
      var idarray = id.split("-");
 
      // Delete the link.
@@ -239,6 +241,7 @@ var updateLink = function(id, name, url, callback) {
                     var newlink = {
                          "links": {
                               "id": linkid,
+                              "type": type,
                               "name": name,
                               "url": url
                          }
@@ -268,8 +271,9 @@ app.post("/dashboard/links/:linkid", function(request, response) {
      var id = request.params.linkid;
      var name = request.body.name;
      var url = request.body.url;
+     var type = "external-url";
 
-     updateLink(id, name, url, function() {
+     updateLink(type, id, name, url, function() {
           var data = {
                "status": 200,
                "action": "update",
@@ -319,11 +323,12 @@ app.put("/dashboard/notes/", function(request, response) {
      var sectionid = request.body.sectionid;
      var name = request.body.name;
      var content = request.body.content;
+     var type = "internal-note";
 
      // Create the link for the note.
-     createLink(sectionid, name, "tmp-note/" + sectionid, function(linkid) {
+     createLink(type, sectionid, name, "tmp-note/" + sectionid, function(linkid) {
           // Update the link and set its url to notes/{linkid}
-          updateLink(linkid, name, "notes/" + linkid, function() {
+          updateLink(type, linkid, name, "notes/" + linkid, function() {
                notesdb.insert({"id": linkid, "name": name, "content": content},
                     function(err, newDoc) {
                          var data = {
@@ -355,8 +360,9 @@ app.post("/dashboard/notes/:noteid", function(request, response) {
      var linkid = request.params.noteid;
      var name = request.body.name;
      var content = request.body.content;
+     var type = "internal-note";
 
-     updateLink(linkid, name, "notes/" + linkid, function() {
+     updateLink(type, linkid, name, "notes/" + linkid, function() {
           notesdb.update({"id": linkid}, {$set: {"name": name, "content": content}}, {},
           function(err, numReplaced) {
                var data = {
