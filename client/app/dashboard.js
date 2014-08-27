@@ -286,6 +286,37 @@ $(document).ready(function() {
           });
      };
 
+     var configureViewNoteBehavior = function(noteid, htmlselector) {
+          $(htmlselector).click(function(e) {
+               e.preventDefault();
+               e.stopPropagation();
+
+               $("#view-note-modal").modal("show");
+
+               $("#view-note-name").html("");
+               $("#view-note-content").html("");
+               $("#view-note-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-view-note-" + noteid,
+                    "class": "ui button"
+               }).html("Close").appendTo("#view-note-actions");
+
+               $.ajax({
+                    url: "/dashboard/notes/" + noteid,
+                    type: "GET",
+                    success: function(data) {
+                         $("#view-note-header").html(data.name);
+                         $("#view-note-content").html(data.content);
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-view-note-" + noteid, function() {
+               $("#view-note-modal").modal("hide");
+          });
+     };
+
      var createHeader = function(sectionName, sectionid) {
           $("<h2/>", {
               "id": sectionid + "-header",
@@ -316,13 +347,8 @@ $(document).ready(function() {
                console.log(link.id + ", " + link.name + " is an external-url.");
 
           } else if (link.type === "internal-note") {
+               configureViewNoteBehavior(link.id, linkElement);
                console.log(link.id + ", " + link.name + " is an internal-note.");
-
-               linkElement.click(function (e) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log($(this).attr("href") + " clicked!");
-               });
 
           } else {
 
