@@ -204,8 +204,6 @@ $(document).ready(function() {
                $("#new-link-url").val("");
                $("#new-link-section-id").val(sectionid);
 
-               $("#create-link-actions").html("");
-
                $("<div/>", {
                     "id": "cancel-create-link-" + sectionid,
                     "class": "ui button"
@@ -240,6 +238,54 @@ $(document).ready(function() {
           });
      };
 
+     var configureAddNoteButton = function(sectionid) {
+          $("<div/>", {
+               "id": sectionid + "-create-note",
+               "class": "mini ui default button"
+          }).html("Add Note").appendTo("#" + sectionid + "-content");
+
+          $("#" + sectionid + "-create-note").click(function() {
+               $("#create-note-modal").modal("show");
+
+               $("#new-note-name").val("");
+               $("#new-note-content").val("");
+               $("#new-note-section-id").val(sectionid);
+               $("#new-note-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-create-note-" + sectionid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#new-note-actions");
+
+               $("<div/>", {
+                    "id": "create-note-" + sectionid,
+                    "class": "ui teal button"
+               }).html("Add").appendTo("#new-note-actions");
+
+               $("#new-note-section-id").val(sectionid);
+          });
+
+          $(document).on("click", "#create-note-" + sectionid, function() {
+               $.ajax({
+                    url: "/dashboard/notes",
+                    type: "PUT",
+                    data: {
+                         "name": $("#new-note-name").val(),
+                         "content": $("#new-note-content").val(),
+                         "sectionid": $("#new-note-section-id").val()
+                    },
+                    success: function() {
+                         $("#create-note-modal").modal("hide");
+                         refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-create-note-" + sectionid, function() {
+               $("#create-note-modal").modal("hide");
+          });
+     };
+
      var createHeader = function(sectionName, sectionid) {
           $("<h2/>", {
               "id": sectionid + "-header",
@@ -271,6 +317,12 @@ $(document).ready(function() {
 
           } else if (link.type === "internal-note") {
                console.log(link.id + ", " + link.name + " is an internal-note.");
+
+               linkElement.click(function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log($(this).attr("href") + " clicked!");
+               });
 
           } else {
 
@@ -320,6 +372,7 @@ $(document).ready(function() {
                createHeader(section.name, section._id);
                createContentSection(links, section._id);
                configureAddLinkButton(section._id);
+               configureAddNoteButton(section._id);
           }
      };
 
