@@ -243,6 +243,47 @@ $(document).ready(function() {
           });
      };
 
+     var configureDeleteNoteButton = function(linkid, linkName) {
+          $("<div/>", {
+               "id": linkid + "-delete",
+               "class": "mini ui default button"
+          }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
+
+          $("#" + linkid + "-delete").click(function() {
+               $("#delete-note-modal").modal("show");
+
+               $("#delete-note-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-delete-" + linkid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#delete-note-actions");
+
+               $("<div/>", {
+                    "id": "delete-" + linkid,
+                    "class": "ui red button"
+               }).html("Delete").appendTo("#delete-note-actions");
+
+               $("#delete-note-id").val(linkid);
+               $("#delete-note-label").html(linkName);
+          });
+
+          $(document).on("click", "#delete-" + linkid,function() {
+               $.ajax({
+                    url: "/dashboard/notes/" + $("#delete-note-id").val(),
+                    type: "DELETE",
+                    success: function(result) {
+                         $("#delete-note-modal").modal("hide");
+                         refreshPage();
+                    }
+               })
+          });
+
+          $(document).on("click", "#cancel-delete-" + linkid, function() {
+               $("#delete-note-modal").modal("hide");
+          });
+     };
+
      var configureAddLinkButton = function(sectionid) {
           $("<div/>", {
                "id": sectionid + "-create-link",
@@ -436,15 +477,15 @@ $(document).ready(function() {
 
                if (typeof(link.type) === "undefined" || link.type === "external-url") {
                     configureEditLinkButton(link.id, link.name, link.url);
+                    configureDeleteLinkButton(link.id, link.name);
 
                } else if (link.type === "internal-note") {
                     configureEditNoteButton(link.id, link.url);
+                    configureDeleteNoteButton(link.id, link.name);
 
                } else {
                     console.log("Unrecognized link type encountered in createContentSection().");
                }
-
-               configureDeleteLinkButton(link.id, link.name);
           }
      };
 
