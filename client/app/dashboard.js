@@ -149,6 +149,59 @@ $(document).ready(function() {
           });
      };
 
+     var configureEditNoteButton = function(linkid, linkURL) {
+          $("<div/>", {
+               "id": linkid + "-edit",
+               "class": "mini ui default button left-button-spacing"
+          }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
+
+          $("#" + linkid + "-edit").click(function() {
+               $("#edit-note-modal").modal("show");
+
+               $("#edit-note-actions").html("");
+               $("#edit-note-id").val(linkid);
+
+               $("<div/>", {
+                    "id": "cancel-edit-" + linkid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#edit-note-actions");
+
+               $("<div/>", {
+                    "id": "edit-" + linkid,
+                    "class": "ui teal button"
+               }).html("Update").appendTo("#edit-note-actions");
+
+               $.ajax({
+                    url: "/dashboard/" + linkURL,
+                    type: "GET",
+                    success: function(data) {
+                         $("#edit-note-name").val(data.name);
+                         $("#edit-note-content").val(data.content);
+                    }
+               });
+          });
+
+          $(document).on("click", "#edit-" + linkid, function() {
+               $.ajax({
+                    url: "/dashboard/" + linkURL,
+                    type: "POST",
+                    data: {
+                         "noteid": $("#edit-note-id").val(),
+                         "name":  $("#edit-note-name").val(),
+                         "content": $("#edit-note-content").val()
+                    },
+                    success: function(result) {
+                         $("#edit-note-modal").modal("hide");
+                         refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-edit-" + linkid, function() {
+               $("#edit-note-modal").modal("hide");
+          });
+     };
+
      var configureDeleteLinkButton = function(linkid, linkName) {
           $("<div/>", {
                "id": linkid + "-delete",
@@ -380,7 +433,17 @@ $(document).ready(function() {
                }).appendTo("#" + sectionid + "-content");
 
                createLink(link, "#" + link.id + "-entry");
-               configureEditLinkButton(link.id, link.name, link.url);
+
+               if (typeof(link.type) === "undefined" || link.type === "external-url") {
+                    configureEditLinkButton(link.id, link.name, link.url);
+
+               } else if (link.type === "internal-note") {
+                    configureEditNoteButton(link.id, link.url);
+
+               } else {
+                    console.log("Unrecognized link type encountered in createContentSection().");
+               }
+
                configureDeleteLinkButton(link.id, link.name);
           }
      };
