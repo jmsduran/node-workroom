@@ -1,6 +1,6 @@
 {
   "name": "node-workroom",
-  "version": "1.0.0",
+  "version": "1.5.0",
   "description": "A Node.js dashboard for the workplace.",
   "main": "main.js",
   "author": "James M. Duran",
