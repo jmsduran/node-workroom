@@ -23,7 +23,11 @@ var nb = require("nedb");
 var app = express();
 var bodyparser = require("body-parser");
 
+var sections = require("./src/model/sections.js");
+
 var db = new nb({filename: "./server/db/appstore.db", autoload: true});
+
+sections.setDB(db);
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded());
@@ -75,12 +79,12 @@ app.get("/app/dashboard.js", function(request, response) {
 app.put("/dashboard/sections/", function(request, response) {
      var name = request.body.name;
 
-     db.insert({"name": name, links: [], idcounter: 0}, function(err, newDoc) {
+     sections.createSection(name, function(id) {
           var data = {
                "status": 200,
                "action": "create",
                "datatype": "section",
-               "id": newDoc._id,
+               "id": id,
                "name": name
           };
 
@@ -91,9 +95,9 @@ app.put("/dashboard/sections/", function(request, response) {
 
 // Read all via HTTP GET.
 app.get("/dashboard/sections/", function(request, response) {
-     db.find({}, function(err, docs) {
+     sections.getSections(function(data) {
           response.writeHead(200, {"Content-Type": "application/json"});
-          response.end(JSON.stringify(docs));
+          response.end(JSON.stringify(data));
      });
 });
 
@@ -101,11 +105,11 @@ app.get("/dashboard/sections/", function(request, response) {
 app.get("/dashboard/sections/:sectionid", function(request, response) {
      var id = request.params.sectionid;
 
-    db.find({"_id": id}, function(err, docs) {
+     sections.getSection(id, function(data) {
           response.writeHead(200, {"Content-Type": "application/json"});
 
           // Return the first element since only one document will be returned.
-          response.end(JSON.stringify(docs[0]));
+          response.end(JSON.stringify(data));
      });
 });
 
@@ -114,26 +118,25 @@ app.post("/dashboard/sections/:sectionid", function(request, response) {
      var id = request.params.sectionid;
      var name = request.body.name;
 
-     db.update({"_id": id}, {$set: {"name": name}}, {},
-          function(err, numReplaced) {
-               var data = {
-                    "status": 200,
-                    "action": "update",
-                    "datatype": "section",
-                    "id": id,
-                    "name": name
-               };
+     sections.updateSection(id, name, function() {
+          var data = {
+               "status": 200,
+               "action": "update",
+               "datatype": "section",
+               "id": id,
+               "name": name
+          };
 
-               response.writeHead(200, {"Content-Type": "application/json"});
-               response.end(JSON.stringify(data));
-          });
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
+     });
 });
 
 // Delete one via HTTP DELETE.
 app.delete("/dashboard/sections/:sectionid", function(request, response) {
      var id = request.params.sectionid;
 
-     db.remove({"_id": id}, {}, function(err, numRemoved) {
+     sections.deleteSection(id, function() {
           var data = {
                "status": 200,
                "action": "delete",
