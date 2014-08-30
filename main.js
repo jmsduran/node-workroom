@@ -24,7 +24,6 @@ var app = express();
 var bodyparser = require("body-parser");
 
 var db = new nb({filename: "./server/db/appstore.db", autoload: true});
-//var notesdb = new nb({filename: "./server/db/notestore.db", autoload: true});
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded());
