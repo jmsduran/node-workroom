@@ -24,7 +24,7 @@ var app = express();
 var bodyparser = require("body-parser");
 
 var db = new nb({filename: "./server/db/appstore.db", autoload: true});
-var notesdb = new nb({filename: "./server/db/notestore.db", autoload: true});
+//var notesdb = new nb({filename: "./server/db/notestore.db", autoload: true});
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded());
@@ -151,21 +151,46 @@ app.delete("/dashboard/sections/:sectionid", function(request, response) {
  * CRUD REST enpoints for link data. A link can only belong to one section.
  */
 
-var createLink = function(type, sectionid, name, url, callback) {
+var createNote = function(sectionid, name, content, callback) {
+     createLinkResource("internal-note", sectionid, name, undefined, content, callback);
+};
+
+var createLink = function(sectionid, name, url, callback) {
+     createLinkResource("external-url", sectionid, name, url, undefined, callback);
+};
+
+var createLinkResource = function(type, sectionid, name, url, content, callback) {
      db.find({"_id": sectionid}, function(err, docs) {
           var idcounter = docs[0].idcounter;
           var linkid = sectionid + "-" + idcounter;
 
-          // Create the new link, assigning it a unique id, which is a
-          // combination of the parent sections and current id counter value.
-          var newlink = {
-               "links": {
-                    "id": linkid,
-                    "type": type,
-                    "name": name,
-                    "url": url
-               }
-          };
+          if (url !== undefined && type === "external-url") {
+               // Create the new link, assigning it a unique id, which is a
+               // combination of the parent sections and current id counter value.
+               var newlink = {
+                    "links": {
+                         "id": linkid,
+                         "type": type,
+                         "name": name,
+                         "url": url
+                    }
+               };
+
+          } else if(content !== undefined && type === "internal-note") {
+               // Create the new note, assigning it a unique id, which is a
+               // combination of the parent sections and current id counter value.
+               var newlink = {
+                    "links": {
+                         "id": linkid,
+                         "type": type,
+                         "name": name,
+                         "content": content
+                    }
+               };
+
+          } else {
+               console.log("createLinkResource() encountered an unrecognized type.");
+          }
 
           // Increment the link id counter.
           var incrementlink = {
@@ -192,7 +217,7 @@ app.put("/dashboard/links/", function(request, response) {
      var url = request.body.url;
      var type = "external-url";
 
-     createLink(type, sectionid, name, url, function(linkid) {
+     createLink(sectionid, name, url, function(linkid) {
           var data = {
                "action": "create",
                "datatype": "link",
@@ -206,27 +231,41 @@ app.put("/dashboard/links/", function(request, response) {
      });
 });
 
-// Read one via HTTP GET.
-app.get("/dashboard/links/:linkid", function(request, response) {
-     var id = request.params.linkid;
-
-     db.find({"links.id": id}, function(err, docs) {
+var getLink = function(linkid, callback) {
+     db.find({"links.id": linkid}, function(err, docs) {
           var data = {};
           var links = docs[0].links;
 
           for (var i = 0; i < links.length; ++i) {
-               if (links[i].id === id) {
+               if (links[i].id === linkid) {
                    data = links[i];
                    break;
                }
           }
 
+          callback(data);
+     });
+};
+
+// Read one via HTTP GET.
+app.get("/dashboard/links/:linkid", function(request, response) {
+     var id = request.params.linkid;
+
+     getLink(id, function(data) {
           response.writeHead(200, {"Content-Type": "application/json"});
           response.end(JSON.stringify(data));
      });
 });
 
-var updateLink = function(type, id, name, url, callback) {
+var updateLink = function(id, name, url, callback) {
+     updateLinkResource("external-url", id, name, url, undefined, callback);
+};
+
+var updateNote = function(id, name, content, callback) {
+     updateLinkResource("internal-note", id, name, undefined, content, callback);
+};
+
+var updateLinkResource = function(type, id, name, url, content, callback) {
      var idarray = id.split("-");
 
      // Delete the link.
@@ -236,16 +275,33 @@ var updateLink = function(type, id, name, url, callback) {
                db.find({"_id": idarray[0]}, function(err, docs) {
                     var linkid = id;
 
-                    // Create the new link, assigning it a unique id, which is a
-                    // combination of the parent sections and current id counter value.
-                    var newlink = {
-                         "links": {
-                              "id": linkid,
-                              "type": type,
-                              "name": name,
-                              "url": url
-                         }
-                    };
+                    if (type === "external-url" && url !== undefined) {
+                         // Create the new link, assigning it a unique id, which is a
+                         // combination of the parent sections and current id counter value.
+                         var newlink = {
+                              "links": {
+                                   "id": linkid,
+                                   "type": type,
+                                   "name": name,
+                                   "url": url
+                              }
+                         };
+
+                    } else if (type === "internal-note" && content !== undefined) {
+                         // Create the new note, assigning it a unique id, which is a
+                         // combination of the parent sections and current id counter value.
+                         var newlink = {
+                              "links": {
+                                   "id": linkid,
+                                   "type": type,
+                                   "name": name,
+                                   "content": content
+                              }
+                         };
+
+                    } else {
+                         console.log("Unrecognized link type encountered in updateLinkResource().");
+                    }
 
                     // Increment the link id counter.
                     var incrementlink = {
@@ -273,7 +329,7 @@ app.post("/dashboard/links/:linkid", function(request, response) {
      var url = request.body.url;
      var type = "external-url";
 
-     updateLink(type, id, name, url, function() {
+     updateLink(id, name, url, function() {
           var data = {
                "status": 200,
                "action": "update",
@@ -323,36 +379,27 @@ app.put("/dashboard/notes/", function(request, response) {
      var sectionid = request.body.sectionid;
      var name = request.body.name;
      var content = request.body.content;
-     var type = "internal-note";
 
      // Create the link for the note.
-     createLink(type, sectionid, name, "tmp-note/" + sectionid, function(linkid) {
-          // Update the link and set its url to notes/{linkid}
-          updateLink(type, linkid, name, "notes/" + linkid, function() {
-               notesdb.insert({"id": linkid, "name": name, "content": content},
-                    function(err, newDoc) {
-                         var data = {
-                              "status": 200,
-                              "action": "create",
-                              "datatype": "note",
-                              "id": linkid
-                         };
+     createNote(sectionid, name, content, function(linkid) {
+          var data = {
+               "status": 200,
+               "action": "create",
+               "datatype": "note",
+               "id": linkid
+          };
 
-                         response.writeHead(200, {"Content-Type": "application/json"});
-                         response.end(JSON.stringify(data));
-                    }
-               );
-
-          });
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
      })
 });
 
 app.get("/dashboard/notes/:noteid", function(request, response) {
      var noteid = request.params.noteid;
 
-      notesdb.find({"id": noteid}, function(err, docs) {
+     getLink(noteid, function(data) {
           response.writeHead(200, {"Content-Type": "application/json"});
-          response.end(JSON.stringify(docs[0]));
+          response.end(JSON.stringify(data));
      });
 });
 
@@ -360,22 +407,18 @@ app.post("/dashboard/notes/:noteid", function(request, response) {
      var linkid = request.params.noteid;
      var name = request.body.name;
      var content = request.body.content;
-     var type = "internal-note";
 
-     updateLink(type, linkid, name, "notes/" + linkid, function() {
-          notesdb.update({"id": linkid}, {$set: {"name": name, "content": content}}, {},
-          function(err, numReplaced) {
-               var data = {
-                    "status": 200,
-                    "action": "update",
-                    "datatype": "note",
-                    "id": linkid,
-                    "name": name
-               };
+     updateNote(linkid, name, content, function() {
+          var data = {
+               "status": 200,
+               "action": "update",
+               "datatype": "note",
+               "id": linkid,
+               "name": name
+          };
 
-               response.writeHead(200, {"Content-Type": "application/json"});
-               response.end(JSON.stringify(data));
-          });
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
      });
 });
 
@@ -383,17 +426,15 @@ app.delete("/dashboard/notes/:noteid", function(request, response) {
      var noteid = request.params.noteid;
 
      deleteLink(noteid, function(linkid) {
-        notesdb.remove({"id": noteid}, {}, function(err, numRemoved) {
-               var data = {
-                    "status": 200,
-                    "action": "delete",
-                    "datatype": "note",
-                    "id": linkid
-               };
+          var data = {
+               "status": 200,
+               "action": "delete",
+               "datatype": "note",
+               "id": linkid
+          };
 
-               response.writeHead(200, {"Content-Type": "application/json"});
-               response.end(JSON.stringify(data));
-          });
+          response.writeHead(200, {"Content-Type": "application/json"});
+          response.end(JSON.stringify(data));
      });
 });
 

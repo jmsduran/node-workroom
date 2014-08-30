@@ -149,7 +149,7 @@ $(document).ready(function() {
           });
      };
 
-     var configureEditNoteButton = function(linkid, linkURL) {
+     var configureEditNoteButton = function(linkid) {
           $("<div/>", {
                "id": linkid + "-edit",
                "class": "mini ui default button left-button-spacing"
@@ -172,7 +172,7 @@ $(document).ready(function() {
                }).html("Update").appendTo("#edit-note-actions");
 
                $.ajax({
-                    url: "/dashboard/" + linkURL,
+                    url: "/dashboard/notes/" + linkid,
                     type: "GET",
                     success: function(data) {
                          $("#edit-note-name").val(data.name);
@@ -183,7 +183,7 @@ $(document).ready(function() {
 
           $(document).on("click", "#edit-" + linkid, function() {
                $.ajax({
-                    url: "/dashboard/" + linkURL,
+                    url: "/dashboard/notes/" + linkid,
                     type: "POST",
                     data: {
                          "noteid": $("#edit-note-id").val(),
@@ -434,7 +434,7 @@ $(document).ready(function() {
           })*/
           var linkElement = $("<a/>", {
                "id": link.id,
-               "href": link.url
+               "href": ((typeof(link.url) !== "undefined") ? link.url : "")
           });
 
           if (typeof(link.type) === "undefined" || link.type === "external-url") {
