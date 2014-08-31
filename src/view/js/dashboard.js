@@ -414,8 +414,8 @@ $(document).ready(function() {
      var createHeader = function(sectionName, sectionid) {
           $("<h2/>", {
               "id": sectionid + "-header",
-              "class": "ui top attached header"
-          }).html(sectionName).appendTo("#" + sectionid);
+              "class": "ui header"
+          }).html(sectionName).appendTo("#" + sectionid + "-content");
 
           $("<span/>", {
               "id": sectionid + "-header-buttons",
@@ -427,11 +427,6 @@ $(document).ready(function() {
      };
 
      var createLink = function(link, appendTo) {
-          /*.click(function (e) {
-               e.preventDefault();
-               e.stopPropagation();
-               console.log($(this).attr("href") + " clicked!");
-          })*/
           var linkElement = $("<a/>", {
                "id": link.id,
                "href": ((typeof(link.url) !== "undefined") ? link.url : "")
@@ -458,11 +453,13 @@ $(document).ready(function() {
 
      };
 
-     var createContentSection = function(links, sectionid) {
+     var createContentSection = function(links, sectionid, sectionName) {
           $("<div/>", {
-               "class": "ui segment attached",
+               "class": "ui raised teal segment",
                "id": sectionid + "-content"
           }).appendTo("#" + sectionid);
+
+          createHeader(sectionName, sectionid);
 
           $("<ul/>").appendTo("#" + sectionid + "-content");
 
@@ -499,8 +496,7 @@ $(document).ready(function() {
                     "class": "column"
                }).appendTo("#dashboard-content");
 
-               createHeader(section.name, section._id);
-               createContentSection(links, section._id);
+               createContentSection(links, section._id, section.name);
                configureAddLinkButton(section._id);
                configureAddNoteButton(section._id);
           }
@@ -536,9 +532,19 @@ $(document).ready(function() {
           });
      });
 
-     $("#toggle-visibility-button").click(function() {
+     $("#edits-button").click(function() {
+          $(".edits").toggle();
+          $(".edits-complete").toggle();
           $(".default").toggle();
      });
+
+     $("#edits-complete-button").click(function() {
+          $(".edits").toggle();
+          $(".edits-complete").toggle();
+          $(".default").toggle();
+     });
+
+     $(".edits").hide();
 
      refreshPage();
 });
