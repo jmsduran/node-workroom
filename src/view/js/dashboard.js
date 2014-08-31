@@ -480,7 +480,7 @@ $(document).ready(function() {
                     configureDeleteLinkButton(link.id, link.name);
 
                } else if (link.type === "internal-note") {
-                    configureEditNoteButton(link.id, link.url);
+                    configureEditNoteButton(link.id);
                     configureDeleteNoteButton(link.id, link.name);
 
                } else {
