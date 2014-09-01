@@ -18,177 +18,14 @@
  */
 
 $(document).ready(function() {
-     var configureEditNoteButton = function(linkid) {
-          $("<div/>", {
-               "id": linkid + "-edit",
-               "class": "mini ui default button left-button-spacing"
-          }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
+     window.APP = {};
 
-          $("#" + linkid + "-edit").click(function() {
-               $("#edit-note-modal").modal("show");
-
-               $("#edit-note-actions").html("");
-               $("#edit-note-id").val(linkid);
-
-               $("<div/>", {
-                    "id": "cancel-edit-" + linkid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#edit-note-actions");
-
-               $("<div/>", {
-                    "id": "edit-" + linkid,
-                    "class": "ui teal button"
-               }).html("Update").appendTo("#edit-note-actions");
-
-               $.ajax({
-                    url: "/dashboard/notes/" + linkid,
-                    type: "GET",
-                    success: function(data) {
-                         $("#edit-note-name").val(data.name);
-                         $("#edit-note-content").val(data.content);
-                    }
-               });
-          });
-
-          $(document).on("click", "#edit-" + linkid, function() {
-               $.ajax({
-                    url: "/dashboard/notes/" + linkid,
-                    type: "POST",
-                    data: {
-                         "noteid": $("#edit-note-id").val(),
-                         "name":  $("#edit-note-name").val(),
-                         "content": $("#edit-note-content").val()
-                    },
-                    success: function(result) {
-                         $("#edit-note-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               });
-          });
-
-          $(document).on("click", "#cancel-edit-" + linkid, function() {
-               $("#edit-note-modal").modal("hide");
-          });
-     };
-
-     var configureDeleteNoteButton = function(linkid, linkName) {
-          $("<div/>", {
-               "id": linkid + "-delete",
-               "class": "mini ui default button"
-          }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
-
-          $("#" + linkid + "-delete").click(function() {
-               $("#delete-note-modal").modal("show");
-
-               $("#delete-note-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-delete-" + linkid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#delete-note-actions");
-
-               $("<div/>", {
-                    "id": "delete-" + linkid,
-                    "class": "ui red button"
-               }).html("Delete").appendTo("#delete-note-actions");
-
-               $("#delete-note-id").val(linkid);
-               $("#delete-note-label").html(linkName);
-          });
-
-          $(document).on("click", "#delete-" + linkid,function() {
-               $.ajax({
-                    url: "/dashboard/notes/" + $("#delete-note-id").val(),
-                    type: "DELETE",
-                    success: function(result) {
-                         $("#delete-note-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               })
-          });
-
-          $(document).on("click", "#cancel-delete-" + linkid, function() {
-               $("#delete-note-modal").modal("hide");
-          });
-     };
-
-     var configureAddNoteButton = function(sectionid) {
-          $("<div/>", {
-               "id": sectionid + "-create-note",
-               "class": "mini ui default button"
-          }).html("Add Note").appendTo("#" + sectionid + "-content");
-
-          $("#" + sectionid + "-create-note").click(function() {
-               $("#create-note-modal").modal("show");
-
-               $("#new-note-name").val("");
-               $("#new-note-content").val("");
-               $("#new-note-section-id").val(sectionid);
-               $("#new-note-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-create-note-" + sectionid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#new-note-actions");
-
-               $("<div/>", {
-                    "id": "create-note-" + sectionid,
-                    "class": "ui teal button"
-               }).html("Add").appendTo("#new-note-actions");
-
-               $("#new-note-section-id").val(sectionid);
-          });
-
-          $(document).on("click", "#create-note-" + sectionid, function() {
-               $.ajax({
-                    url: "/dashboard/notes",
-                    type: "PUT",
-                    data: {
-                         "name": $("#new-note-name").val(),
-                         "content": $("#new-note-content").val(),
-                         "sectionid": $("#new-note-section-id").val()
-                    },
-                    success: function() {
-                         $("#create-note-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               });
-          });
-
-          $(document).on("click", "#cancel-create-note-" + sectionid, function() {
-               $("#create-note-modal").modal("hide");
-          });
-     };
-
-     var configureViewNoteBehavior = function(noteid, htmlselector) {
-          $(htmlselector).click(function(e) {
-               e.preventDefault();
-               e.stopPropagation();
-
-               $("#view-note-modal").modal("show");
-
-               $("#view-note-name").html("");
-               $("#view-note-content").html("");
-               $("#view-note-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-view-note-" + noteid,
-                    "class": "ui button"
-               }).html("Close").appendTo("#view-note-actions");
-
-               $.ajax({
-                    url: "/dashboard/notes/" + noteid,
-                    type: "GET",
-                    success: function(data) {
-                         $("#view-note-header").html(data.name);
-                         $("#view-note-content").html(data.content);
-                    }
-               });
-          });
-
-          $(document).on("click", "#cancel-view-note-" + noteid, function() {
-               $("#view-note-modal").modal("hide");
-          });
+     window.APP.refreshPage = function() {
+          $("#dashboard-content").html("");
+          $(document).unbind();
+          $.get("/dashboard/sections/", function(data) {
+               createSection(data);
+          }, "json");
      };
 
      var createHeader = function(sectionName, sectionid) {
@@ -216,7 +53,7 @@ $(document).ready(function() {
                console.log(link.id + ", " + link.name + " is an external-url.");
 
           } else if (link.type === "internal-note") {
-               configureViewNoteBehavior(link.id, linkElement);
+               window.NOTES.configureViewNoteBehavior(link.id, linkElement);
                console.log(link.id + ", " + link.name + " is an internal-note.");
 
           } else {
@@ -230,7 +67,6 @@ $(document).ready(function() {
                "id": link.id + "-entry-buttons",
                "style": "display: inline-block;"
           }).appendTo(appendTo);
-
      };
 
      var createContentSection = function(links, sectionid, sectionName) {
@@ -257,8 +93,8 @@ $(document).ready(function() {
                     window.LINKS.configureDeleteLinkButton(link.id, link.name);
 
                } else if (link.type === "internal-note") {
-                    configureEditNoteButton(link.id);
-                    configureDeleteNoteButton(link.id, link.name);
+                    window.NOTES.configureEditNoteButton(link.id);
+                    window.NOTES.configureDeleteNoteButton(link.id, link.name);
 
                } else {
                     console.log("Unrecognized link type encountered in createContentSection().");
@@ -278,17 +114,8 @@ $(document).ready(function() {
 
                createContentSection(links, section._id, section.name);
                window.LINKS.configureAddLinkButton(section._id);
-               configureAddNoteButton(section._id);
+               window.NOTES.configureAddNoteButton(section._id);
           }
-     };
-
-     window.APP = {};
-     window.APP.refreshPage = function() {
-          $("#dashboard-content").html("");
-          $(document).unbind();
-          $.get("/dashboard/sections/", function(data) {
-               createSection(data);
-          }, "json");
      };
 
      window.APP.refreshPage();

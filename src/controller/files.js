@@ -101,6 +101,15 @@ module.exports = function(app) {
           });
      });
 
+     app.get("/app/notes.js", function(request, response) {
+          fs.readFile("./src/view/js/notes.js", function(err, data) {
+               response.writeHead(200, {
+                    "Content-Type": "text/javascript"
+               });
+               response.end(data);
+          });
+     });
+
      app.get("/app/view.compiled.js", function(request, response) {
           fs.readFile("./src/view/js/view.compiled.js", function(err, data) {
                response.writeHead(200, {
