@@ -18,6 +18,93 @@
  */
 
 $(document).ready(function() {
+     window.SECTIONS = {};
+
+     window.SECTIONS.configureEditSectionButton = function(sectionid, sectionName) {
+          $("<div/>", {
+               "id": sectionid + "-edit",
+               "class": "mini ui default button left-button-spacing"
+          }).html("Edit").appendTo("#" + sectionid + "-header-buttons");
+
+          $("#" + sectionid + "-edit").click(function() {
+               $("#edit-section-modal").modal("show");
+
+               $("#edit-section-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-edit-" + sectionid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#edit-section-actions");
+
+               $("<div/>", {
+                    "id": "edit-" + sectionid,
+                    "class": "ui teal button"
+               }).html("Update").appendTo("#edit-section-actions");
+
+               $("#edit-section-name").val(sectionName);
+               $("#edit-section-id").val(sectionid);
+          });
+
+          $(document).on("click", "#edit-" + sectionid, function() {
+               $.ajax({
+                    url: "/dashboard/sections/" + $("#edit-section-id").val(),
+                    type: "POST",
+                    data: {
+                         "name":  $("#edit-section-name").val()
+                    },
+                    success: function(result) {
+                         $("#edit-section-modal").modal("hide");
+                         window.APP.refreshPage();
+                    }
+               });
+          });
+
+          $(document).on("click", "#cancel-edit-" + sectionid, function() {
+               $("#edit-section-modal").modal("hide");
+          });
+     };
+
+     window.SECTIONS.configureDeleteSectionButton = function(sectionid, sectionName) {
+          $("<div/>", {
+               "id": sectionid + "-delete",
+               "class": "mini ui default button"
+          }).html("Delete").appendTo("#" + sectionid + "-header-buttons");
+
+          $("#" + sectionid + "-delete").click(function() {
+               $("#delete-section-modal").modal("show");
+
+               $("#delete-section-actions").html("");
+
+               $("<div/>", {
+                    "id": "cancel-delete-" + sectionid,
+                    "class": "ui button"
+               }).html("Cancel").appendTo("#delete-section-actions");
+
+               $("<div/>", {
+                    "id": "delete-" + sectionid,
+                    "class": "ui red button"
+               }).html("Delete").appendTo("#delete-section-actions");
+
+               $("#delete-section-id").val(sectionid);
+               $("#delete-section-label").html(sectionName);
+          });
+
+          $(document).on("click", "#delete-" + sectionid,function() {
+               $.ajax({
+                    url: "/dashboard/sections/" + $("#delete-section-id").val(),
+                    type: "DELETE",
+                    success: function(result) {
+                         $("#delete-section-modal").modal("hide");
+                         window.APP.refreshPage();
+                    }
+               })
+          });
+
+          $(document).on("click", "#cancel-delete-" + sectionid, function() {
+               $("#delete-section-modal").modal("hide");
+          });
+     };
+
      $("#new-section").click(function() {
           $("#new-section-modal").modal("show");
           $("#new-section-name").val("");

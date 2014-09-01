@@ -18,137 +18,6 @@
  */
 
 $(document).ready(function() {
-     var configureEditSectionButton = function(sectionid, sectionName) {
-          $("<div/>", {
-               "id": sectionid + "-edit",
-               "class": "mini ui default button left-button-spacing"
-          }).html("Edit").appendTo("#" + sectionid + "-header-buttons");
-
-          $("#" + sectionid + "-edit").click(function() {
-               $("#edit-section-modal").modal("show");
-
-               $("#edit-section-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-edit-" + sectionid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#edit-section-actions");
-
-               $("<div/>", {
-                    "id": "edit-" + sectionid,
-                    "class": "ui teal button"
-               }).html("Update").appendTo("#edit-section-actions");
-
-               $("#edit-section-name").val(sectionName);
-               $("#edit-section-id").val(sectionid);
-          });
-
-          $(document).on("click", "#edit-" + sectionid, function() {
-               $.ajax({
-                    url: "/dashboard/sections/" + $("#edit-section-id").val(),
-                    type: "POST",
-                    data: {
-                         "name":  $("#edit-section-name").val()
-                    },
-                    success: function(result) {
-                         $("#edit-section-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               });
-          });
-
-          $(document).on("click", "#cancel-edit-" + sectionid, function() {
-               $("#edit-section-modal").modal("hide");
-          });
-     };
-
-     var configureDeleteSectionButton = function(sectionid, sectionName) {
-          $("<div/>", {
-               "id": sectionid + "-delete",
-               "class": "mini ui default button"
-          }).html("Delete").appendTo("#" + sectionid + "-header-buttons");
-
-          $("#" + sectionid + "-delete").click(function() {
-               $("#delete-section-modal").modal("show");
-
-               $("#delete-section-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-delete-" + sectionid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#delete-section-actions");
-
-               $("<div/>", {
-                    "id": "delete-" + sectionid,
-                    "class": "ui red button"
-               }).html("Delete").appendTo("#delete-section-actions");
-
-               $("#delete-section-id").val(sectionid);
-               $("#delete-section-label").html(sectionName);
-          });
-
-          $(document).on("click", "#delete-" + sectionid,function() {
-               $.ajax({
-                    url: "/dashboard/sections/" + $("#delete-section-id").val(),
-                    type: "DELETE",
-                    success: function(result) {
-                         $("#delete-section-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               })
-          });
-
-          $(document).on("click", "#cancel-delete-" + sectionid, function() {
-               $("#delete-section-modal").modal("hide");
-          });
-     };
-
-     var configureEditLinkButton = function(linkid, linkName, linkURL) {
-          $("<div/>", {
-               "id": linkid + "-edit",
-               "class": "mini ui default button left-button-spacing"
-          }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
-
-          $("#" + linkid + "-edit").click(function() {
-               $("#edit-link-modal").modal("show");
-
-               $("#edit-link-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-edit-" + linkid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#edit-link-actions");
-
-               $("<div/>", {
-                    "id": "edit-" + linkid,
-                    "class": "ui teal button"
-               }).html("Update").appendTo("#edit-link-actions");
-
-               $("#edit-link-name").val(linkName);
-               $("#edit-link-url").val(linkURL);
-               $("#edit-link-id").val(linkid);
-          });
-
-          $(document).on("click", "#edit-" + linkid, function() {
-               $.ajax({
-                    url: "/dashboard/links/" + $("#edit-link-id").val(),
-                    type: "POST",
-                    data: {
-                         "name":  $("#edit-link-name").val(),
-                         "url": $("#edit-link-url").val()
-                    },
-                    success: function(result) {
-                         $("#edit-link-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               });
-          });
-
-          $(document).on("click", "#cancel-edit-" + linkid, function() {
-               $("#edit-link-modal").modal("hide");
-          });
-     };
-
      var configureEditNoteButton = function(linkid) {
           $("<div/>", {
                "id": linkid + "-edit",
@@ -202,47 +71,6 @@ $(document).ready(function() {
           });
      };
 
-     var configureDeleteLinkButton = function(linkid, linkName) {
-          $("<div/>", {
-               "id": linkid + "-delete",
-               "class": "mini ui default button"
-          }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
-
-          $("#" + linkid + "-delete").click(function() {
-               $("#delete-link-modal").modal("show");
-
-               $("#delete-link-actions").html("");
-
-               $("<div/>", {
-                    "id": "cancel-delete-" + linkid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#delete-link-actions");
-
-               $("<div/>", {
-                    "id": "delete-" + linkid,
-                    "class": "ui red button"
-               }).html("Delete").appendTo("#delete-link-actions");
-
-               $("#delete-link-id").val(linkid);
-               $("#delete-link-label").html(linkName);
-          });
-
-          $(document).on("click", "#delete-" + linkid,function() {
-               $.ajax({
-                    url: "/dashboard/links/" + $("#delete-link-id").val(),
-                    type: "DELETE",
-                    success: function(result) {
-                         $("#delete-link-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               })
-          });
-
-          $(document).on("click", "#cancel-delete-" + linkid, function() {
-               $("#delete-link-modal").modal("hide");
-          });
-     };
-
      var configureDeleteNoteButton = function(linkid, linkName) {
           $("<div/>", {
                "id": linkid + "-delete",
@@ -281,54 +109,6 @@ $(document).ready(function() {
 
           $(document).on("click", "#cancel-delete-" + linkid, function() {
                $("#delete-note-modal").modal("hide");
-          });
-     };
-
-     var configureAddLinkButton = function(sectionid) {
-          $("<div/>", {
-               "id": sectionid + "-create-link",
-               "class": "mini ui default button"
-          }).html("Add Link").appendTo("#" + sectionid + "-content");
-
-          $("#" + sectionid + "-create-link").click(function() {
-               $("#create-link-modal").modal("show");
-
-               $("#new-link-actions").html("");
-               $("#new-link-name").val("");
-               $("#new-link-url").val("");
-               $("#new-link-section-id").val(sectionid);
-
-               $("<div/>", {
-                    "id": "cancel-create-link-" + sectionid,
-                    "class": "ui button"
-               }).html("Cancel").appendTo("#new-link-actions");
-
-               $("<div/>", {
-                    "id": "create-link-" + sectionid,
-                    "class": "ui teal button"
-               }).html("Add").appendTo("#new-link-actions");
-
-               $("#new-link-section-id").val(sectionid);
-          });
-
-          $(document).on("click", "#create-link-" + sectionid, function() {
-               $.ajax({
-                    url: "/dashboard/links",
-                    type: "PUT",
-                    data: {
-                         "name": $("#new-link-name").val(),
-                         "url": $("#new-link-url").val(),
-                         "sectionid": $("#new-link-section-id").val()
-                    },
-                    success: function() {
-                         $("#create-link-modal").modal("hide");
-                         window.APP.refreshPage();
-                    }
-               });
-          });
-
-          $(document).on("click", "#cancel-create-link-" + sectionid, function() {
-               $("#create-link-modal").modal("hide");
           });
      };
 
@@ -422,8 +202,8 @@ $(document).ready(function() {
               "style": "display: inline-block;"
           }).appendTo("#" + sectionid + "-header");
 
-          configureEditSectionButton(sectionid, sectionName);
-          configureDeleteSectionButton(sectionid, sectionName);
+          window.SECTIONS.configureEditSectionButton(sectionid, sectionName);
+          window.SECTIONS.configureDeleteSectionButton(sectionid, sectionName);
      };
 
      var createLink = function(link, appendTo) {
@@ -473,8 +253,8 @@ $(document).ready(function() {
                createLink(link, "#" + link.id + "-entry");
 
                if (typeof(link.type) === "undefined" || link.type === "external-url") {
-                    configureEditLinkButton(link.id, link.name, link.url);
-                    configureDeleteLinkButton(link.id, link.name);
+                    window.LINKS.configureEditLinkButton(link.id, link.name, link.url);
+                    window.LINKS.configureDeleteLinkButton(link.id, link.name);
 
                } else if (link.type === "internal-note") {
                     configureEditNoteButton(link.id);
@@ -497,7 +277,7 @@ $(document).ready(function() {
                }).appendTo("#dashboard-content");
 
                createContentSection(links, section._id, section.name);
-               configureAddLinkButton(section._id);
+               window.LINKS.configureAddLinkButton(section._id);
                configureAddNoteButton(section._id);
           }
      };
