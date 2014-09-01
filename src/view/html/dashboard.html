@@ -2,11 +2,14 @@
      <head>
           <title>My Workroom</title>
           <link rel="stylesheet" type="text/css" href="/semantic-ui/css/semantic.min.css"></link>
-          <script type="text/javascript" src="jquery/1.11.1/jquery.min.js"></script>
+          <script type="text/javascript" src="/handlebars/2.0.0/handlebars.runtime.js"></script>
+          <script type="text/javascript" src="/app/view.compiled.js"></script>
+          <script type="text/javascript" src="/jquery/1.11.1/jquery.min.js"></script>
           <script type="text/javascript" src="/semantic-ui/javascript/semantic.min.js"></script>
+
+          <script type="text/javascript" src="/app/menu.js"></script>
           <script type="text/javascript" src="/app/dashboard.js"></script>
-     </head>
-     <body>
+
           <style type="text/css">
                body {
                     font-style: normal;
@@ -21,29 +24,17 @@
                     margin-left: 5px !important;
                }
           </style>
-
-          <div class="ui menu">
-               <div class="item">My Workroom</div>
-               <div class="right edits item">
-                    <div id="edits-button" class="mini ui teal button">Edit</div>
-               </div>
-               <div class="right edits-complete item">
-                    <div id="edits-complete-button" class="mini ui teal button">Done Editing</div>
-               </div>
-               <div class="right default item">
-                    <div id="new-section" class="mini ui button">New Section</div>
-               </div>
-          </div>
-
+     </head>
+     <body>
           <div id="new-section-modal" class="ui modal">
                <div class="header">
                     New Section
                </div>
                <div class="content">
-                    <div class="ui form">
+                    <div id="new-section-create-form" class="ui form">
                          <div class="field">
                               <label for="new-section-name">Name</label>
-                              <input id="new-section-name" type="text"/>
+                              <input id="new-section-name" name="new-section-name" type="text"/>
                          </div>
                     </div>
                </div>
@@ -51,7 +42,7 @@
                     <div id="new-section-cancel" class="ui button">
                          Cancel
                     </div>
-                    <div id="new-section-create" class="ui teal button">
+                    <div id="new-section-create" class="ui teal submit button">
                          Create
                     </div>
                </div>

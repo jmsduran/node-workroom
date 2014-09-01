@@ -532,19 +532,5 @@ $(document).ready(function() {
           });
      });
 
-     $("#edits-button").click(function() {
-          $(".edits").toggle();
-          $(".edits-complete").toggle();
-          $(".default").toggle();
-     });
-
-     $("#edits-complete-button").click(function() {
-          $(".edits").toggle();
-          $(".edits-complete").toggle();
-          $(".default").toggle();
-     });
-
-     $(".edits").hide();
-
      refreshPage();
 });

@@ -7,6 +7,7 @@
   "dependencies": {
     "body-parser": "1.6.4",
     "express": "4.8.2",
-    "nedb": "0.10.7"
+    "nedb": "0.10.7",
+    "handlebars": "2.0.0-beta.1"
   }
 }

@@ -47,6 +47,15 @@ module.exports = function(app) {
           });
      });
 
+     app.get("/handlebars/2.0.0/handlebars.runtime.js", function(request, response) {
+          fs.readFile("./node_modules/handlebars/dist/handlebars.runtime.js", function(err, data) {
+               response.writeHead(200, {
+                    "Content-Type": "text/javascript"
+               });
+               response.end(data);
+          });
+     });
+
      app.get("/semantic-ui/javascript/semantic.min.js", function(request, response) {
           fs.readFile("./src/view/lib/semantic-ui/javascript/semantic.min.js", function(err, data) {
                response.writeHead(200, {
@@ -58,6 +67,24 @@ module.exports = function(app) {
 
      app.get("/app/dashboard.js", function(request, response) {
           fs.readFile("./src/view/js/dashboard.js", function(err, data) {
+               response.writeHead(200, {
+                    "Content-Type": "text/javascript"
+               });
+               response.end(data);
+          });
+     });
+
+     app.get("/app/menu.js", function(request, response) {
+          fs.readFile("./src/view/js/menu.js", function(err, data) {
+               response.writeHead(200, {
+                    "Content-Type": "text/javascript"
+               });
+               response.end(data);
+          });
+     });
+
+     app.get("/app/view.compiled.js", function(request, response) {
+          fs.readFile("./src/view/js/view.compiled.js", function(err, data) {
                response.writeHead(200, {
                     "Content-Type": "text/javascript"
                });
