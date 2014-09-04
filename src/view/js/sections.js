@@ -26,7 +26,10 @@ $(document).ready(function() {
                "class": "mini ui default button left-button-spacing"
           }).html("Edit").appendTo("#" + sectionid + "-header-buttons");
 
-          $("#" + sectionid + "-edit").click(function() {
+          $(document).on("click", "#" + sectionid + "-edit", function() {
+               var html = Handlebars.templates["sections/edit"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#edit-section-modal").modal("show");
 
                $("#edit-section-actions").html("");
@@ -50,7 +53,7 @@ $(document).ready(function() {
                     url: "/dashboard/sections/" + $("#edit-section-id").val(),
                     type: "POST",
                     data: {
-                         "name":  $("#edit-section-name").val()
+                         "name": $("#edit-section-name").val()
                     },
                     success: function(result) {
                          $("#edit-section-modal").modal("hide");
@@ -71,6 +74,9 @@ $(document).ready(function() {
           }).html("Delete").appendTo("#" + sectionid + "-header-buttons");
 
           $("#" + sectionid + "-delete").click(function() {
+               var html = Handlebars.templates["sections/delete"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#delete-section-modal").modal("show");
 
                $("#delete-section-actions").html("");
@@ -89,7 +95,7 @@ $(document).ready(function() {
                $("#delete-section-label").html(sectionName);
           });
 
-          $(document).on("click", "#delete-" + sectionid,function() {
+          $(document).on("click", "#delete-" + sectionid, function() {
                $.ajax({
                     url: "/dashboard/sections/" + $("#delete-section-id").val(),
                     type: "DELETE",
@@ -105,25 +111,33 @@ $(document).ready(function() {
           });
      };
 
-     $("#new-section").click(function() {
-          $("#new-section-modal").modal("show");
-          $("#new-section-name").val("");
-     });
+     window.SECTIONS.configureSectionClickEvents = function() {
+          $(document).on("click", "#new-section", function() {
+               var html = Handlebars.templates["sections/create"]();
+               $("<div/>").html(html).appendTo("body");
 
-     $("#new-section-cancel").click(function() {
-          $("#new-section-modal").modal("hide");
-     });
-
-     $("#new-section-create").click(function() {
-          $.ajax({
-               url: "/dashboard/sections",
-               type: "PUT",
-               data: {
-                    name: $("#new-section-name").val()
-               },
-               success: function(result) {
-                    window.APP.refreshPage();
-               }
+               $("#new-section-modal").modal("show");
+               $("#new-section-name").val("");
           });
-     });
+
+          $(document).on("click", "#new-section-cancel", function() {
+               $("#new-section-modal").modal("hide");
+          });
+
+          $(document).on("click", "#new-section-create", function() {
+               $.ajax({
+                    url: "/dashboard/sections",
+                    type: "PUT",
+                    data: {
+                         name: $("#new-section-name").val()
+                    },
+                    success: function(result) {
+                         window.APP.refreshPage();
+                    }
+               });
+          });
+     };
+
+     // Ensures these events are available on page load.
+     window.SECTIONS.configureSectionClickEvents();
 });

@@ -22,8 +22,11 @@ $(document).ready(function() {
 
      window.APP.refreshPage = function() {
           $("#dashboard-content").html("");
-          $(document).unbind();
+
           $.get("/dashboard/sections/", function(data) {
+               $(document).unbind();
+               window.SECTIONS.configureSectionClickEvents();
+
                createSection(data);
           }, "json");
      };
