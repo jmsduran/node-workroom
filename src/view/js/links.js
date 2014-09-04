@@ -27,6 +27,9 @@ $(document).ready(function() {
           }).html("Add Link").appendTo("#" + sectionid + "-content");
 
           $("#" + sectionid + "-create-link").click(function() {
+               var html = Handlebars.templates["links/create"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#create-link-modal").modal("show");
 
                $("#new-link-actions").html("");
@@ -75,6 +78,9 @@ $(document).ready(function() {
           }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {
+               var html = Handlebars.templates["links/edit"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#edit-link-modal").modal("show");
 
                $("#edit-link-actions").html("");
@@ -121,6 +127,9 @@ $(document).ready(function() {
           }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-delete").click(function() {
+               var html = Handlebars.templates["links/delete"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#delete-link-modal").modal("show");
 
                $("#delete-link-actions").html("");
