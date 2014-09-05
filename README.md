@@ -9,6 +9,8 @@ Running
 To start the node-workroom app, from the project's root directory run the following command:
 
 ```
+npm install
+
 node app.js
 ```
 
