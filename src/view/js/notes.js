@@ -27,6 +27,9 @@ $(document).ready(function() {
           }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {
+               var html = Handlebars.templates["notes/edit"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#edit-note-modal").modal("show");
 
                $("#edit-note-actions").html("");
@@ -80,6 +83,9 @@ $(document).ready(function() {
           }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-delete").click(function() {
+               var html = Handlebars.templates["notes/delete"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#delete-note-modal").modal("show");
 
                $("#delete-note-actions").html("");
@@ -121,6 +127,9 @@ $(document).ready(function() {
           }).html("Add Note").appendTo("#" + sectionid + "-content");
 
           $("#" + sectionid + "-create-note").click(function() {
+               var html = Handlebars.templates["notes/create"]();
+               $("<div/>").html(html).appendTo("body");
+
                $("#create-note-modal").modal("show");
 
                $("#new-note-name").val("");
@@ -166,6 +175,9 @@ $(document).ready(function() {
           $(htmlselector).click(function(e) {
                e.preventDefault();
                e.stopPropagation();
+
+               var html = Handlebars.templates["notes/view"]();
+               $("<div/>").html(html).appendTo("body");
 
                $("#view-note-modal").modal("show");
 
