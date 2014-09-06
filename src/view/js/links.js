@@ -23,7 +23,7 @@ $(document).ready(function() {
      window.LINKS.configureAddLinkButton = function(sectionid) {
           $("<div/>", {
                "id": sectionid + "-create-link",
-               "class": "mini ui default button"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Add Link").appendTo("#" + sectionid + "-content");
 
           $("#" + sectionid + "-create-link").click(function() {
@@ -74,7 +74,7 @@ $(document).ready(function() {
      window.LINKS.configureEditLinkButton = function(linkid, linkName, linkURL) {
           $("<div/>", {
                "id": linkid + "-edit",
-               "class": "mini ui default button left-button-spacing"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button left-button-spacing"
           }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {
@@ -123,7 +123,7 @@ $(document).ready(function() {
      window.LINKS.configureDeleteLinkButton = function(linkid, linkName) {
           $("<div/>", {
                "id": linkid + "-delete",
-               "class": "mini ui default button"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-delete").click(function() {

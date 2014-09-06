@@ -20,6 +20,9 @@
 $(document).ready(function() {
      window.APP = {};
 
+     window.APP.CONSTANT = {};
+     window.APP.CONSTANT.EDIT = "default-edit-mode";
+
      window.APP.refreshPage = function() {
           $("#dashboard-content").html("");
 

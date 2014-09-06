@@ -23,7 +23,7 @@ $(document).ready(function() {
      window.NOTES.configureEditNoteButton = function(linkid) {
           $("<div/>", {
                "id": linkid + "-edit",
-               "class": "mini ui default button left-button-spacing"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button left-button-spacing"
           }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {
@@ -79,7 +79,7 @@ $(document).ready(function() {
      window.NOTES.configureDeleteNoteButton = function(linkid, linkName) {
           $("<div/>", {
                "id": linkid + "-delete",
-               "class": "mini ui default button"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Delete").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-delete").click(function() {
@@ -123,7 +123,7 @@ $(document).ready(function() {
      window.NOTES.configureAddNoteButton = function(sectionid) {
           $("<div/>", {
                "id": sectionid + "-create-note",
-               "class": "mini ui default button"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Add Note").appendTo("#" + sectionid + "-content");
 
           $("#" + sectionid + "-create-note").click(function() {

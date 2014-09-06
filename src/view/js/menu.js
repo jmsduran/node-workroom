@@ -18,19 +18,26 @@
  */
 
 $(document).ready(function() {
-     var html = Handlebars.templates["menu/menu"]();
+     var tmpl = {
+          editmode: window.APP.CONSTANT.EDIT
+     };
+
+     var html = Handlebars.templates["menu/menu"](tmpl);
      $("<div/>").html(html).prependTo("body");
 
      $("#edits-button").click(function() {
           $(".edits").toggle();
           $(".edits-complete").toggle();
-          $(".default").toggle();
+          $("." + window.APP.CONSTANT.EDIT).toggle();
      });
 
      $("#edits-complete-button").click(function() {
+          // Toggles the ADD section and EDIT button in the menu.
           $(".edits").toggle();
           $(".edits-complete").toggle();
-          $(".default").toggle();
+
+          // Toggles the ADD/EDIT/DELETE buttons from the dashboard.
+          $("." + window.APP.CONSTANT.EDIT).toggle();
      });
 
      $(".edits").hide();

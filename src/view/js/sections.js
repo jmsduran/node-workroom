@@ -23,7 +23,7 @@ $(document).ready(function() {
      window.SECTIONS.configureEditSectionButton = function(sectionid, sectionName) {
           $("<div/>", {
                "id": sectionid + "-edit",
-               "class": "mini ui default button left-button-spacing"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button left-button-spacing"
           }).html("Edit").appendTo("#" + sectionid + "-header-buttons");
 
           $(document).on("click", "#" + sectionid + "-edit", function() {
@@ -70,7 +70,7 @@ $(document).ready(function() {
      window.SECTIONS.configureDeleteSectionButton = function(sectionid, sectionName) {
           $("<div/>", {
                "id": sectionid + "-delete",
-               "class": "mini ui default button"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Delete").appendTo("#" + sectionid + "-header-buttons");
 
           $("#" + sectionid + "-delete").click(function() {
