@@ -47,6 +47,15 @@ module.exports = function(app) {
           });
      });
 
+     app.get("/jquery/1.11.1/jquery-ui.min.js", function(request, response) {
+          fs.readFile("./src/view/lib/jquery/1.11.1/jquery-ui.min.js", function(err, data) {
+               response.writeHead(200, {
+                    "Content-Type": "text/javascript"
+               });
+               response.end(data);
+          });
+     });
+
      app.get("/handlebars/2.0.0/handlebars.runtime.js", function(request, response) {
           fs.readFile("./node_modules/handlebars/dist/handlebars.runtime.js", function(err, data) {
                response.writeHead(200, {
@@ -60,6 +69,15 @@ module.exports = function(app) {
           fs.readFile("./src/view/lib/semantic-ui/javascript/semantic.min.js", function(err, data) {
                response.writeHead(200, {
                     "Content-Type": "text/javascript"
+               });
+               response.end(data);
+          });
+     });
+
+     app.get("/app/dashboard.css", function(request, response) {
+          fs.readFile("./src/view/css/dashboard.css", function(err, data) {
+               response.writeHead(200, {
+                    "Content-Type": "text/css"
                });
                response.end(data);
           });

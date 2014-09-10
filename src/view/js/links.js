@@ -74,7 +74,7 @@ $(document).ready(function() {
      window.LINKS.configureEditLinkButton = function(linkid, linkName, linkURL) {
           $("<div/>", {
                "id": linkid + "-edit",
-               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button left-button-spacing"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {
@@ -161,6 +161,20 @@ $(document).ready(function() {
 
           $(document).on("click", "#cancel-delete-" + linkid, function() {
                $("#delete-link-modal").modal("hide");
+          });
+     };
+
+     window.LINKS.configureLinkHoverBehavior = function(linkelement) {
+          $(linkelement).hover(function() {
+               if ($("#edits-complete-button").is(":visible")) {
+                    $(this).removeClass("default-section-entry");
+                    $(this).addClass("focused-section-entry");
+               }
+          }, function() {
+               if ($("#edits-complete-button").is(":visible")) {
+                    $(this).removeClass("focused-section-entry");
+                    $(this).addClass("default-section-entry");
+               }
           });
      };
 });

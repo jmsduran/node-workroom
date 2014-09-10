@@ -69,9 +69,8 @@ $(document).ready(function() {
 
           linkElement.html(link.name).appendTo(appendTo);
 
-          $("<span/>", {
-               "id": link.id + "-entry-buttons",
-               "style": "display: inline-block;"
+          $("<div/>", {
+               "id": link.id + "-entry-buttons"
           }).appendTo(appendTo);
      };
 
@@ -83,14 +82,22 @@ $(document).ready(function() {
 
           createHeader(sectionName, sectionid);
 
-          $("<ul/>").appendTo("#" + sectionid + "-content");
+          $("<ul/>", {
+               "class": "sortable-list",
+               "id": sectionid + "-list"
+          }).appendTo("#" + sectionid + "-content");
 
           for (var j = 0; j < links.length; ++j) {
                var link = links[j];
 
-               $("<li/>", {
-                    "id": link.id + "-entry"
-               }).appendTo("#" + sectionid + "-content");
+               var linkelement = $("<li/>", {
+                    "id": link.id + "-entry",
+                    "class": "default-section-entry"
+               });
+
+               window.LINKS.configureLinkHoverBehavior(linkelement);
+
+               $(linkelement).appendTo("#" + sectionid + "-list");
 
                createLink(link, "#" + link.id + "-entry");
 
@@ -106,6 +113,8 @@ $(document).ready(function() {
                     console.log("Unrecognized link type encountered in createContentSection().");
                }
           }
+
+          window.MENU.configureSortableList(sectionid);
      };
 
      var createSection = function(data) {

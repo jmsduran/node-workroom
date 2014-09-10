@@ -23,7 +23,7 @@ $(document).ready(function() {
      window.NOTES.configureEditNoteButton = function(linkid) {
           $("<div/>", {
                "id": linkid + "-edit",
-               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button left-button-spacing"
+               "class": "mini ui " + window.APP.CONSTANT.EDIT + " button"
           }).html("Edit").appendTo("#" + linkid + "-entry-buttons");
 
           $("#" + linkid + "-edit").click(function() {

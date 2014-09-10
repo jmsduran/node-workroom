@@ -18,6 +18,8 @@
  */
 
 $(document).ready(function() {
+     window.MENU = {};
+
      var tmpl = {
           editmode: window.APP.CONSTANT.EDIT
      };
@@ -28,7 +30,11 @@ $(document).ready(function() {
      $("#edits-button").click(function() {
           $(".edits").toggle();
           $(".edits-complete").toggle();
+
           $("." + window.APP.CONSTANT.EDIT).toggle();
+
+          $(".sortable-list").sortable("enable");
+          $(".sortable-list").disableSelection();
      });
 
      $("#edits-complete-button").click(function() {
@@ -38,7 +44,17 @@ $(document).ready(function() {
 
           // Toggles the ADD/EDIT/DELETE buttons from the dashboard.
           $("." + window.APP.CONSTANT.EDIT).toggle();
+
+          $(".sortable-list").sortable("disable");
+          $(".sortable-list").disableSelection();
      });
 
      $(".edits").hide();
+
+     window.MENU.configureSortableList = function(sectionid) {
+          if ($("#edits-complete-button").is(":visible")) {
+               $("#" + sectionid + "-list").sortable();
+               $("#" + sectionid + "-list").disableSelection();
+          }
+     };
 });
