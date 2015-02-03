@@ -3,6 +3,8 @@ node-workroom (v2.0.0)
 
 A Node.js dashboard for the workplace.
 
+![Sample](https://raw.githubusercontent.com/jmsduran/node-workroom/master/img/sample.png)
+
 Running
 ---
 
